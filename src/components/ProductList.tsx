@@ -101,7 +101,6 @@ export default function ProductList() {
   const [lightbox, setLightbox] = useState<LightboxState>(null);
 
   useEffect(() => {
-    // Escuchando los datos en VIVO desde Sanity.io
     sanityClient.fetch(`*[_type == "candle"]{
       _id,
       name,
