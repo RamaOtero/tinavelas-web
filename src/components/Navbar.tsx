@@ -34,24 +34,24 @@ export default function Navbar() {
         </div>
 
         {/* Left Links (Desktop) */}
-        <div className="hidden md:flex flex-1 items-center space-x-10 text-[10px] tracking-[0.2em] uppercase font-medium">
-          <a href="#shop" className="hover:opacity-70 transition-opacity relative group">
+        <div className="hidden md:flex flex-1 items-center space-x-5 lg:space-x-10 text-[9px] lg:text-[10px] tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium">
+          <a href="#shop" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Catálogo
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
-          <a href="#aromas" className="hover:opacity-70 transition-opacity relative group">
+          <a href="#aromas" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Aromas
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
-          <a href="#refill" className="hover:opacity-70 transition-opacity relative group">
+          <a href="#refill" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Refill
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
-          <a href="#nosotros" className="hover:opacity-70 transition-opacity relative group">
+          <a href="#nosotros" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Nosotros
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
-          <a href="#cuidados" className="hover:opacity-70 transition-opacity relative group">
+          <a href="#cuidados" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Cuidados
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
@@ -63,12 +63,12 @@ export default function Navbar() {
         </div>
 
         {/* Right Icons */}
-        <div className="flex-1 flex justify-end items-center space-x-6 text-[10px] tracking-[0.2em] uppercase font-medium">
-          <span className="hidden sm:block opacity-60 cursor-default uppercase tracking-[0.2em]" title="Próximamente">
+        <div className="flex-1 flex justify-end items-center space-x-4 lg:space-x-6 text-[9px] lg:text-[10px] tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium">
+          <span className="hidden lg:block opacity-60 cursor-default uppercase whitespace-nowrap" title="Próximamente">
             ¡Pronto Carrito!
           </span>
-          <a href="https://wa.me/5492216031496" target="_blank" rel="noreferrer" className="hover:opacity-70 flex items-center gap-2 group transition-opacity">
-            <span className="hidden md:inline relative">
+          <a href="https://wa.me/5492216031496" target="_blank" rel="noreferrer" className="hover:opacity-70 flex items-center justify-end gap-2 group transition-opacity min-w-max">
+            <span className="hidden md:inline relative whitespace-nowrap">
               Hacer Pedido
               <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
             </span>
