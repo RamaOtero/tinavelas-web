@@ -20,7 +20,7 @@ export default function Navbar() {
 
   // Inherit color based on scroll state: Light text over Hero, dark text over solid background
   const navStyle = scrolled
-    ? 'bg-bg-light/95 backdrop-blur-md border-b border-accent-2/20 py-4 text-text-dark'
+    ? 'bg-bg-light shadow-sm border-b border-accent-2/20 py-4 text-text-dark'
     : 'bg-transparent py-6 text-[#FAF9F6]'; // Ultra clear/white text for the hero
 
   return (

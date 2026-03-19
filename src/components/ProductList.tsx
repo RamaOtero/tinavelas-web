@@ -19,19 +19,36 @@ type LightboxState = {
 
 function ProductCard({ product, index, openLightbox }: { product: Candle; index: number; openLightbox: (state: LightboxState) => void }) {
   const [currentImage, setCurrentImage] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const images = product.images || [];
+  const hasImages = images.length > 0;
 
-  const nextImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentImage((prev) => (prev + 1) % product.images.length);
+  const nextImage = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (hasImages) setCurrentImage((prev) => (prev + 1) % images.length);
   };
 
-  const prevImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentImage((prev) => (prev - 1 + product.images.length) % product.images.length);
+  const prevImage = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (hasImages) setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+    const touchEnd = e.changedTouches[0].clientX;
+    const diff = touchStart - touchEnd;
+    
+    if (diff > 40) nextImage();
+    if (diff < -40) prevImage();
+    setTouchStart(null);
   };
 
   const handleWhatsApp = () => {
-    const text = `¡Hola! Me encantó la ${product.name} (valor de ref: ${product.price}). Quisiera saber más detalles y disponibilidad.`;
+    const text = `¡Hola! Me encantó la ${product.name || 'vela'} (valor de ref: ${product.price || ''}). Quisiera saber más detalles y disponibilidad.`;
     window.open(`https://wa.me/5492216031496?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -53,19 +70,28 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
     >
       <div
         className="relative aspect-[3/4] bg-accent-1/10 overflow-hidden mb-8 w-full cursor-zoom-in rounded-sm"
-        onClick={() => openLightbox({ product, index: currentImage })}
+        onClick={() => hasImages && openLightbox({ product, index: currentImage })}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         <AnimatePresence initial={false} mode="popLayout">
-          <motion.img
-            key={currentImage}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.6 }}
-            src={getImageUrl(product.images[currentImage])}
-            alt={`${product.name} - Vista ${currentImage + 1}`}
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s] ease-[0.25,0.46,0.45,0.94]"
-          />
+          {hasImages ? (
+            <motion.img
+              key={currentImage}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.6 }}
+              src={getImageUrl(images[currentImage])}
+              loading="lazy"
+              decoding="async"
+              style={{ willChange: "opacity, transform" }}
+              alt={`${product.name} - Vista ${currentImage + 1}`}
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s] ease-[0.25,0.46,0.45,0.94]"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-200 text-gray-500">No Image</div>
+          )}
         </AnimatePresence>
 
         {product.images?.length > 1 && (
