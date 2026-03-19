@@ -25,7 +25,7 @@ export default function Navbar() {
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-500 ${navStyle} ${scrolled ? 'top-0' : 'top-8'}`}>
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between relative min-h-[4rem] md:min-h-[3rem] lg:min-h-[5rem]">
         {/* Left / Mobile Toggle */}
         <div className="flex-1 md:hidden">
           <button onClick={() => setIsOpen(!isOpen)} aria-label="Menu" className="hover:text-accent-2 transition-colors">
@@ -34,7 +34,7 @@ export default function Navbar() {
         </div>
 
         {/* Left Links (Desktop) */}
-        <div className="hidden md:flex flex-1 items-center space-x-3 md:space-x-4 lg:space-x-10 text-[8.5px] md:text-[9px] lg:text-[10px] tracking-[0.1em] md:tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium">
+        <div className="hidden md:flex flex-1 md:pr-12 lg:pr-24 items-center space-x-3 md:space-x-4 lg:space-x-10 text-[8.5px] md:text-[9px] lg:text-[10px] tracking-[0.1em] md:tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium whitespace-nowrap overflow-hidden">
           <a href="#shop" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Catálogo
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
@@ -62,12 +62,12 @@ export default function Navbar() {
         </div>
 
         {/* Logo (Center) */}
-        <div className="flex-shrink flex items-center justify-center px-2 md:px-6 lg:px-4 min-w-[80px]">
-          <img src="/logo.png" alt="Tina Velas Logo" className="h-16 md:h-12 lg:h-20 w-auto max-w-full object-contain drop-shadow-sm transition-transform duration-500" />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10">
+          <img src="/logo.png" alt="Tina Velas Logo" className="h-16 md:h-12 lg:h-20 w-auto object-contain drop-shadow-sm transition-transform duration-500 pointer-events-auto" />
         </div>
 
         {/* Right Icons */}
-        <div className="flex-1 flex justify-end items-center space-x-3 md:space-x-4 lg:space-x-6 text-[8.5px] md:text-[9px] lg:text-[10px] tracking-[0.1em] md:tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium">
+        <div className="flex-1 flex justify-end md:pl-12 lg:pl-24 items-center space-x-3 md:space-x-4 lg:space-x-6 text-[8.5px] md:text-[9px] lg:text-[10px] tracking-[0.1em] md:tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium">
           <span className="hidden md:block opacity-60 cursor-default uppercase whitespace-nowrap" title="Próximamente">
             ¡Pronto Carrito!
           </span>
