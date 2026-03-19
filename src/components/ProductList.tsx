@@ -21,6 +21,10 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
   const [currentImage, setCurrentImage] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const images = product.images || [];
+
+  const isMdStaggered = index % 2 === 1;
+  const isLgStaggered = index % 3 === 1;
+  const staggerClass = `${isMdStaggered ? 'md:mt-24' : 'md:mt-0'} ${isLgStaggered ? 'lg:mt-32' : 'lg:mt-0'}`;
   const hasImages = images.length > 0;
 
   const nextImage = (e?: React.MouseEvent) => {
@@ -65,8 +69,8 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ delay: index * 0.2, duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-      className={`group flex flex-col ${index === 1 ? 'md:mt-24 lg:mt-32' : ''}`}
+      transition={{ delay: (index % 3) * 0.15, duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
+      className={`group flex flex-col ${staggerClass}`}
     >
       <div
         className="relative aspect-[3/4] bg-accent-1/10 overflow-hidden mb-8 w-full cursor-zoom-in rounded-sm"
