@@ -43,6 +43,10 @@ export default function Navbar() {
             Aromas
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
+          <a href="#accesorios" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
+            Accesorios
+            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
+          </a>
           <a href="#refill" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Refill
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
@@ -92,6 +96,7 @@ export default function Navbar() {
             </button>
             <a href="#shop" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Catálogo</a>
             <a href="#aromas" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Aromas</a>
+            <a href="#accesorios" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Accesorios</a>
             <a href="#refill" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Refill</a>
             <a href="#nosotros" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Nosotros</a>
             <a href="#cuidados" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Cuidados</a>

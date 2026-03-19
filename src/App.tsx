@@ -2,6 +2,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ProductList from './components/ProductList';
 import Scents from './components/Scents';
+import Accessories from './components/Accessories';
 import Refill from './components/Refill';
 import About from './components/About';
 import Care from './components/Care';
@@ -16,6 +17,7 @@ function App() {
         <Hero />
         <ProductList />
         <Scents />
+        <Accessories />
         <Refill />
         <About />
         <Care />
