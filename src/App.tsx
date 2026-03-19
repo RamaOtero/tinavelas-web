@@ -12,7 +12,8 @@ import WhatsAppFloating from './components/WhatsAppFloating';
 
 function App() {
   return (
-    <div className="min-h-screen bg-bg-light text-text-dark selection:bg-accent-2 selection:text-text-dark font-sans">
+    <div className="min-h-screen bg-bg-light text-text-dark selection:bg-accent-2 selection:text-text-dark font-sans relative">
+      <AnnouncementBar />
       <Navbar />
       <main>
         <Hero />

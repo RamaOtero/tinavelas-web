@@ -24,7 +24,7 @@ export default function Navbar() {
     : 'bg-transparent py-6 text-[#FAF9F6]'; // Ultra clear/white text for the hero
 
   return (
-    <nav className={`fixed w-full z-50 top-0 transition-all duration-500 ${navStyle}`}>
+    <nav className={`fixed w-full z-50 transition-all duration-500 ${navStyle} ${scrolled ? 'top-0' : 'top-8'}`}>
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Left / Mobile Toggle */}
         <div className="flex-1 md:hidden">
