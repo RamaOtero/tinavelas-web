@@ -320,9 +320,9 @@ export default function Cart() {
                       <div className="animate-in fade-in slide-in-from-top-2 duration-500 mt-4 bg-accent-2/5 border border-accent-2/20 p-4 rounded-sm">
                         <h4 className="text-[10px] md:text-xs font-heading tracking-widest uppercase text-text-dark mb-3">Datos Bancarios</h4>
                         <div className="space-y-2 text-[10px] md:text-[11px] font-sans text-text-dark/80">
-                          <p><span className="font-semibold">Titular:</span> Tu Nombre Aquí</p>
-                          <p><span className="font-semibold">CBU/CVU:</span> 0000000000000000000000</p>
-                          <p><span className="font-semibold">Alias:</span> tina.velas.alias</p>
+                          <p><span className="font-semibold">Titular:</span> Maria Eugenia Pittatore</p>
+                          <p><span className="font-semibold">CVU:</span> 0000003100037262012759</p>
+                          <p><span className="font-semibold">Alias:</span> Tinavelasartesanales</p>
                         </div>
                         <p className="text-[9px] text-text-dark/60 mt-4 italic leading-relaxed">*Recuerda enviar el comprobante por WhatsApp una vez hecha la compra para confirmarla en nuestro sistema.*</p>
                       </div>
