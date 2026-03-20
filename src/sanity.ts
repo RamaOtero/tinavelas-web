@@ -1,5 +1,5 @@
 import { createClient } from '@sanity/client';
-import imageUrlBuilder from '@sanity/image-url';
+import createImageUrlBuilder from '@sanity/image-url';
 
 // Configuración del cliente para la cuenta recién creada de Tina Velas
 export const sanityClient = createClient({
@@ -9,7 +9,7 @@ export const sanityClient = createClient({
   apiVersion: '2024-03-18', // Fecha del estándar de la API de Sanity
 });
 
-const builder = imageUrlBuilder(sanityClient);
+const builder = createImageUrlBuilder(sanityClient);
 
 // Función "mágica" para transformar las imágenes pesadas de Sanity en URLs optimizadas para la web
 export function urlFor(source: any) {

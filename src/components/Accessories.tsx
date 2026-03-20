@@ -15,6 +15,7 @@ interface Accessory {
 
 export default function Accessories() {
   const [accessories, setAccessories] = useState<Accessory[]>([]);
+  const { addItem } = useCartStore();
 
   useEffect(() => {
     // Buscar herramientas extras en Sanity
@@ -26,8 +27,6 @@ export default function Accessories() {
 
   // Ocultar sección completa si todavía no publicaron accesorios
   if (accessories.length === 0) return null;
-
-  const { addItem } = useCartStore();
 
   const handleAddToCart = (product: Accessory) => {
     if (!product.priceNumber) {
@@ -69,8 +68,8 @@ export default function Accessories() {
               className="group flex flex-col items-center text-center h-full"
             >
               <div className="w-full aspect-[4/5] bg-accent-1/5 overflow-hidden rounded-sm mb-6 relative hover:shadow-lg transition-shadow duration-500">
-                {item.image ? (
-                  <img src={urlFor(item.image).url()} alt={item.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] ease-out" loading="lazy" />
+                {item.image && item.image.asset ? (
+                  <img src={urlFor(item.image).url() || undefined} alt={item.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] ease-out" loading="lazy" />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-text-dark/30 text-[9px] uppercase tracking-widest font-sans bg-accent-1/10">Sin Foto</div>
                 )}
