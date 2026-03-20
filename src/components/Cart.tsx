@@ -55,8 +55,8 @@ export default function Cart() {
     });
     msg += `\n*Subtotal:* ${formatPrice(subtotal)}\n`;
     msg += `*Envío:* ${deliveryMethod === 'PICKUP' ? 'Bonificado' : (isFreeShipping ? 'Bonificado' : formatPrice(shippingCost))}\n`;
-    msg += `*TOTAL A TRANSFERIR: ${formatPrice(total)}*\n\n`;
-    msg += `¡Hola! Confirmo este pedido para pagar por transferencia bancaria. Espero los datos de la cuenta.`;
+    msg += `*TOTAL A ABONAR: ${formatPrice(total)}*\n\n`;
+    msg += `¡Hola! Confirmo este pedido para pagar mediante Efectivo/Transferencia. Por favor indíquenme cómo procedemos.`;
     
     const encodedMsg = encodeURIComponent(msg);
     // Número base extraído del Floating Widget configurado.
@@ -196,7 +196,7 @@ export default function Cart() {
                           )}
                           <p className={`text-[10px] md:text-[11px] font-sans tracking-widest mb-2 ${item.scent ? 'text-text-dark/80' : 'text-text-dark/60'}`}>{formatPrice(item.price)}</p>
                           {item.stock === 0 && (
-                            <span className="inline-block bg-accent-2/10 text-accent-2 text-[8px] tracking-widest uppercase px-2 py-0.5 rounded-sm">A Pedido</span>
+                            <span className="inline-block border border-accent-2/60 bg-accent-2/10 text-accent-2 text-[8px] md:text-[9px] tracking-widest uppercase px-2 py-1 rounded-sm mt-1">Por Encargo (Con Demora)</span>
                           )}
                         </div>
                         
@@ -303,7 +303,7 @@ export default function Cart() {
                         onClick={() => setPaymentMethod('TRANSFERENCIA')}
                         className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors flex items-center justify-center gap-2 ${paymentMethod === 'TRANSFERENCIA' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
                       >
-                        Transferencia
+                        Efectivo / Transfer
                       </button>
                     </div>
                   </div>

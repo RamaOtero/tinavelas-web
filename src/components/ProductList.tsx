@@ -14,7 +14,7 @@ export interface Candle {
   stock: number;
   description: string;
   allowedScents?: string[];
-  images: any[]; 
+  images: any[];
 }
 
 type LightboxState = {
@@ -63,7 +63,7 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
     if (!touchStart) return;
     const touchEnd = e.changedTouches[0].clientX;
     const diff = touchStart - touchEnd;
-    
+
     if (diff > 40) nextImage();
     if (diff < -40) prevImage();
     setTouchStart(null);
@@ -73,14 +73,14 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
 
   const handleAddToCart = () => {
     if (!product.priceNumber) {
-      toast.error('Esta pieza requiere precio de panel.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em'} });
+      toast.error('Esta pieza requiere precio de panel.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
       return;
     }
     if (product.allowedScents && product.allowedScents.length > 0 && !selectedScent) {
-      toast.error('Por favor selecciona un aroma.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em'} });
+      toast.error('Por favor selecciona un aroma.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
       return;
     }
-    
+
     addItem({
       id: product._id,
       name: product.name,
@@ -154,7 +154,7 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
 
         {product.allowedScents && product.allowedScents.length > 0 && (
           <div className="w-full mb-5 relative" ref={dropdownRef}>
-            <button 
+            <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="w-full flex items-center justify-between border-b border-text-dark/20 pb-2 text-[9px] md:text-[10px] font-sans tracking-[0.1em] transition-colors hover:border-text-dark group"
             >
@@ -164,7 +164,7 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
 
             <AnimatePresence>
               {isDropdownOpen && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}
                   className="absolute left-0 right-0 top-full mt-1 bg-bg-light border border-accent-2/30 shadow-xl z-20 py-1 rounded-sm overflow-hidden"
                 >
@@ -186,7 +186,7 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
         )}
 
         <button onClick={handleAddToCart} className="border border-text-dark/40 w-full text-text-dark px-2 py-3 text-[9px] md:text-[10px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-text-dark hover:border-text-dark hover:text-bg-light transition-all duration-300 rounded-sm mt-auto">
-          {product.stock === 0 ? 'Encargar a Medida' : `Agregar por ${product.price}`}
+          {product.stock === 0 ? 'Encargar (Tiene demora)' : `Agregar por ${product.price}`}
         </button>
       </div>
     </motion.div>
@@ -256,14 +256,14 @@ export default function ProductList() {
 
           {loading ? (
             <div className="flex flex-col items-center justify-center py-32 space-y-4">
-               <Loader2 className="animate-spin text-accent-2" size={32} />
-               <p className="text-[10px] font-sans tracking-[0.3em] text-text-dark uppercase">Encendiendo catálogo online...</p>
+              <Loader2 className="animate-spin text-accent-2" size={32} />
+              <p className="text-[10px] font-sans tracking-[0.3em] text-text-dark uppercase">Encendiendo catálogo online...</p>
             </div>
           ) : candles.length === 0 ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-32 space-y-4 text-center">
-               <p className="text-[12px] font-sans tracking-[0.2em] text-text-dark/60 uppercase">Catálogo en preparación</p>
-               <h3 className="text-3xl font-heading text-text-dark">Sube tus primera velas en tu panel de control</h3>
-               <p className="font-sans text-xs max-w-sm mt-4 text-text-dark/60">En cuanto publiques un producto en Sanity, aparecerá mágicamente aquí.</p>
+              <p className="text-[12px] font-sans tracking-[0.2em] text-text-dark/60 uppercase">Catálogo en preparación</p>
+              <h3 className="text-3xl font-heading text-text-dark">Sube tus primera velas en tu panel de control</h3>
+              <p className="font-sans text-xs max-w-sm mt-4 text-text-dark/60">En cuanto publiques un producto en Sanity, aparecerá mágicamente aquí.</p>
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-8">
@@ -282,7 +282,7 @@ export default function ProductList() {
             <button onClick={() => setLightbox(null)} className="absolute top-6 right-6 md:top-10 md:right-10 text-bg-light/60 hover:text-bg-light transition-colors z-[110] p-2" aria-label="Cerrar vista"><X size={32} strokeWidth={1} /></button>
             {lightbox.product.images.length > 1 && <button onClick={handleLightboxPrev} className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 text-bg-light/60 hover:text-bg-light hover:scale-110 transition-all z-[110] p-4 cursor-pointer"><ChevronLeft size={40} strokeWidth={1} /></button>}
             {lightbox.product.images.length > 1 && <button onClick={handleLightboxNext} className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 text-bg-light/60 hover:text-bg-light hover:scale-110 transition-all z-[110] p-4 cursor-pointer"><ChevronRight size={40} strokeWidth={1} /></button>}
-            
+
             <AnimatePresence mode="wait">
               <motion.img key={lightbox.index} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }} src={urlFor(lightbox.product.images[lightbox.index]).url()} alt={`${lightbox.product.name} - Vista completa ${lightbox.index + 1}`} className="w-auto h-auto max-w-full max-h-full object-contain cursor-default shadow-2xl rounded-sm" onClick={(e) => e.stopPropagation()} />
             </AnimatePresence>
@@ -294,7 +294,7 @@ export default function ProductList() {
                 ))}
               </div>
             )}
-            
+
             {lightbox.product.images.length > 1 && (
               <div className="absolute top-10 left-10 md:top-12 md:left-12 text-bg-light/60 font-sans text-xs tracking-[0.3em]">{lightbox.index + 1} / {lightbox.product.images.length}</div>
             )}
