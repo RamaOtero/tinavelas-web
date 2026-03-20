@@ -4,9 +4,10 @@ import { X, Plus, Minus, Trash2, ShoppingBag, MapPin, ArrowLeft, Loader2 } from 
 import { useCartStore } from '../store/useCartStore';
 import { urlFor, sanityClient } from '../sanity';
 import CheckoutMap from './CheckoutMap';
+import { toast } from 'react-hot-toast';
 
 export default function Cart() {
-  const { items, isCartOpen, toggleCart, updateQuantity, removeItem } = useCartStore();
+  const { items, removeItem, updateQuantity, toggleCart, isCartOpen, clearCart } = useCartStore();
   const [view, setView] = useState<'CART' | 'CHECKOUT'>('CART');
   
   // Checkout Form State
