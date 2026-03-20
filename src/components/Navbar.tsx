@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useCartStore } from '../store/useCartStore';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { toggleCart, items } = useCartStore();
+  
+  const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,7 +62,7 @@ export default function Navbar() {
           <img src="/logo.png" alt="Tina Velas Logo" className="h-16 md:h-12 lg:h-20 w-auto object-contain drop-shadow-sm transition-transform duration-500 pointer-events-auto" />
         </div>
 
-        {/* Right Icons */}
+            {/* Right Icons */}
         <div className="flex-1 flex justify-end items-center space-x-3 md:space-x-4 lg:space-x-6 text-[8.5px] md:text-[9px] lg:text-[10px] tracking-[0.1em] md:tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium whitespace-nowrap overflow-hidden">
           <a href="#nosotros" className="hidden md:inline hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Nosotros
@@ -71,13 +75,15 @@ export default function Navbar() {
           <span className="hidden lg:inline opacity-60 cursor-default uppercase whitespace-nowrap" title="Próximamente">
             ¡Pronto Carrito!
           </span>
-          <a href="https://wa.me/5492216031496" target="_blank" rel="noreferrer" className="hover:opacity-70 flex items-center justify-end gap-2 group transition-opacity min-w-max">
-            <span className="hidden md:inline relative whitespace-nowrap">
-              Hacer Pedido
-              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
-            </span>
-            <span className="md:hidden border-b border-current pb-0.5">WhatsApp</span>
-          </a>
+          {/* Cart Icon */}
+          <button onClick={() => toggleCart(true)} className="relative hover:opacity-70 transition-opacity ml-2 group flex items-center justify-center">
+            <ShoppingBag size={18} strokeWidth={1.5} />
+            {totalItems > 0 && (
+              <span className="absolute -top-1.5 -right-2 bg-accent-2 text-bg-light text-[8px] font-sans font-bold w-[16px] h-[16px] flex items-center justify-center rounded-full">
+                {totalItems}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 

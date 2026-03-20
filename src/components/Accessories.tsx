@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { sanityClient, urlFor } from '../sanity';
+import { useCartStore } from '../store/useCartStore';
 
 interface Accessory {
   _id: string;
   name: string;
   price: string;
+  priceNumber: number;
+  stock: number;
   description: string;
   image: any;
 }
@@ -16,7 +19,7 @@ export default function Accessories() {
   useEffect(() => {
     // Buscar herramientas extras en Sanity
     sanityClient
-      .fetch<Accessory[]>(`*[_type == "accessory"]{ _id, name, price, description, image }`)
+      .fetch<Accessory[]>(`*[_type == "accessory"]{ _id, name, price, priceNumber, stock, description, image }`)
       .then(setAccessories)
       .catch(console.error);
   }, []);
@@ -24,10 +27,21 @@ export default function Accessories() {
   // Ocultar sección completa si todavía no publicaron accesorios
   if (accessories.length === 0) return null;
 
-  const handleWhatsApp = (product: Accessory) => {
-    const priceText = product.price ? ` (Ref: ${product.price})` : '';
-    const text = `¡Hola! Me encantó el accesorio: "${product.name}"${priceText}. Quisiera preguntar por su disponibilidad para sumarlo a mi compra.`;
-    window.open(`https://wa.me/5492216031496?text=${encodeURIComponent(text)}`, '_blank');
+  const { addItem } = useCartStore();
+
+  const handleAddToCart = (product: Accessory) => {
+    if (!product.priceNumber) {
+      alert('Esta herramienta requiere un precio ingresado en el panel central de Sanity para comprarse online.');
+      return;
+    }
+    
+    addItem({
+      id: product._id,
+      name: product.name,
+      price: product.priceNumber,
+      stock: product.stock !== undefined ? product.stock : 10,
+      image: product.image,
+    });
   };
 
   return (
@@ -64,8 +78,8 @@ export default function Accessories() {
               <h3 className="text-xs md:text-sm lg:text-base font-heading text-text-dark tracking-widest uppercase mb-2">{item.name}</h3>
               <p className="text-[9px] md:text-[10px] font-sans font-light tracking-[0.05em] text-text-dark/80 mb-6 px-1 leading-relaxed md:h-12 overflow-hidden">{item.description}</p>
 
-              <button onClick={() => handleWhatsApp(item)} className="border border-accent-2/60 text-text-dark px-2 md:px-6 py-3 text-[8.5px] md:text-[9.5px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-accent-2 hover:border-accent-2 hover:text-bg-light transition-colors duration-300 rounded-sm mt-auto w-full">
-                Encargar {item.price ? `(${item.price})` : ''}
+              <button onClick={() => handleAddToCart(item)} className="border border-accent-2/60 text-text-dark px-2 md:px-6 py-3 text-[8.5px] md:text-[9.5px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-accent-2 hover:border-accent-2 hover:text-bg-light transition-colors duration-300 rounded-sm mt-auto w-full">
+                {item.stock === 0 ? 'Encargar a Medida' : `Agregar ${item.price ? `(${item.price})` : ''}`}
               </button>
             </motion.div>
           ))}

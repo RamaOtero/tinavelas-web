@@ -1,5 +1,6 @@
 import AnnouncementBar from './components/AnnouncementBar';
 import Navbar from './components/Navbar';
+import Cart from './components/Cart';
 import Hero from './components/Hero';
 import ProductList from './components/ProductList';
 import Scents from './components/Scents';
@@ -15,6 +16,7 @@ function App() {
     <div className="min-h-screen bg-bg-light text-text-dark selection:bg-accent-2 selection:text-text-dark font-sans relative">
       <AnnouncementBar />
       <Navbar />
+      <Cart />
       <main>
         <Hero />
         <ProductList />

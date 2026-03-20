@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X, Loader2 } from 'lucide-react';
 import { sanityClient, urlFor } from '../sanity';
+import { useCartStore } from '../store/useCartStore';
 
 export interface Candle {
   _id: string;
   name: string;
   creator: string;
   price: string;
+  priceNumber: number;
+  stock: number;
   description: string;
   images: any[]; 
 }
@@ -51,9 +54,21 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
     setTouchStart(null);
   };
 
-  const handleWhatsApp = () => {
-    const text = `¡Hola! Me encantó la ${product.name || 'vela'} (valor de ref: ${product.price || ''}). Quisiera saber más detalles y disponibilidad.`;
-    window.open(`https://wa.me/5492216031496?text=${encodeURIComponent(text)}`, '_blank');
+  const { addItem } = useCartStore();
+
+  const handleAddToCart = () => {
+    if (!product.priceNumber) {
+      alert('Esta pieza requiere configuración de precio en el panel para ser encargada online.');
+      return;
+    }
+    
+    addItem({
+      id: product._id,
+      name: product.name,
+      price: product.priceNumber,
+      stock: product.stock !== undefined ? product.stock : 10,
+      image: hasImages ? images[0] : null,
+    });
   };
 
   const getImageUrl = (image: any) => {
@@ -117,8 +132,8 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
         <div className="w-8 h-[1px] bg-accent-2/60 mb-4"></div>
         <p className="text-[11px] font-sans text-text-dark/80 font-light leading-relaxed max-w-xs mb-6">{product.description}</p>
 
-        <button onClick={handleWhatsApp} className="border border-text-dark/40 text-text-dark px-10 py-3 text-[9px] md:text-[10px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-text-dark hover:border-text-dark hover:text-bg-light transition-all duration-300 rounded-sm">
-          Encargar por {product.price}
+        <button onClick={handleAddToCart} className="border border-text-dark/40 text-text-dark px-10 py-3 text-[9px] md:text-[10px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-text-dark hover:border-text-dark hover:text-bg-light transition-all duration-300 rounded-sm">
+          {product.stock === 0 ? 'Encargar a Medida' : `Agregar por ${product.price}`}
         </button>
       </div>
     </motion.div>
@@ -136,6 +151,8 @@ export default function ProductList() {
       name,
       creator,
       price,
+      priceNumber,
+      stock,
       description,
       images
     }`).then((data) => {
