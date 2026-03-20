@@ -44,11 +44,45 @@ export default function Cart() {
   const handleCheckout = async () => {
     if (!name || !phone || !address || !coordinates) return;
     setProcessing(true);
-    // TODO: Phase 8 Serverless MP logic goes here
-    setTimeout(() => {
-      alert("Conectando con Mercado Pago... (En desarrollo)");
+    
+    try {
+      const payload = {
+        // Enviar datos encriptados hacia nuestro blindaje en Vercel
+        items: items.map(i => ({ 
+          id: i.id, 
+          quantity: i.quantity, 
+          name: i.name, 
+          image: i.image && i.image.asset ? urlFor(i.image).url() : null 
+        })),
+        customer: { name, phone },
+        delivery: { address, lat: coordinates.lat, lng: coordinates.lng },
+        isFreeShipping
+      };
+
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al procesar la bóveda bancaria');
+      }
+
+      if (data.init_point) {
+        // Todo autorizado de lado de Vercel y Sanity, mandamos al cliente a la ventana oficial de Mercado Pago!
+        window.location.href = data.init_point; 
+      } else {
+         throw new Error('No se pudo generar el enlace de pago seguro');
+      }
+
+    } catch (error: any) {
+      console.error(error);
+      alert('Hubo un problema procesando la orden: ' + error.message);
       setProcessing(false);
-    }, 2000);
+    }
   };
 
   return (
