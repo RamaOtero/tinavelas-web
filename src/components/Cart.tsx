@@ -12,7 +12,7 @@ export default function Cart() {
   
   // Checkout Form State
   const [deliveryMethod, setDeliveryMethod] = useState<'SHIPPING' | 'PICKUP'>('SHIPPING');
-  const [paymentMethod, setPaymentMethod] = useState<'MERCADOPAGO' | 'TRANSFERENCIA'>('MERCADOPAGO');
+  const [paymentMethod, setPaymentMethod] = useState<'TRANSFERENCIA' | 'EFECTIVO'>('TRANSFERENCIA');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
@@ -44,11 +44,12 @@ export default function Cart() {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }).format(price);
   };
 
-  const handleTransferenciaCheckout = () => {
+  const handleWhatsappCheckout = () => {
     let msg = `*NUEVO PEDIDO - TINA VELAS* 🕯️\n\n`;
     msg += `*Cliente:* ${name}\n`;
     msg += `*WhatsApp:* ${phone}\n`;
-    msg += `*Entrega:* ${deliveryMethod === 'PICKUP' ? '📦 Retiro en Punto a coordinar' : `📍 Envío a ${address}`}\n\n`;
+    msg += `*Entrega:* ${deliveryMethod === 'PICKUP' ? '📦 Retiro en Punto a coordinar' : `📍 Envío a ${address}`}\n`;
+    msg += `*Pago:* ${paymentMethod === 'TRANSFERENCIA' ? '🏦 Transferencia Bancaria' : '💵 Efectivo'}\n\n`;
     msg += `*MI CARRITO:*\n`;
     items.forEach(item => {
       msg += `- ${item.quantity}x ${item.name} ${item.scent ? `(Aroma: ${item.scent}) ` : ''}- ${formatPrice(item.price * item.quantity)}\n`;
@@ -56,7 +57,12 @@ export default function Cart() {
     msg += `\n*Subtotal:* ${formatPrice(subtotal)}\n`;
     msg += `*Envío:* ${deliveryMethod === 'PICKUP' ? 'Bonificado' : (isFreeShipping ? 'Bonificado' : formatPrice(shippingCost))}\n`;
     msg += `*TOTAL A ABONAR: ${formatPrice(total)}*\n\n`;
-    msg += `¡Hola! Confirmo este pedido para pagar mediante Efectivo/Transferencia. Por favor indíquenme cómo procedemos.`;
+
+    if (paymentMethod === 'TRANSFERENCIA') {
+      msg += `¡Hola! Confirmo este pedido. A continuación adjuntaré el comprobante de transferencia bancaria por ${formatPrice(total)}.`;
+    } else {
+      msg += `¡Hola! Confirmo este pedido. Abonaré con efectivo exacto al momento de ${deliveryMethod === 'PICKUP' ? 'retirar' : 'recibir'} el paquete.`;
+    }
     
     const encodedMsg = encodeURIComponent(msg);
     // Número base extraído del Floating Widget configurado.
@@ -76,12 +82,10 @@ export default function Cart() {
        return;
     }
 
-    if (paymentMethod === 'TRANSFERENCIA') {
-      handleTransferenciaCheckout();
-      return;
-    }
-
-    setProcessing(true);
+    // MercadoPago removido temporalmente por decisión de negocio.
+    // Todos los cobros se delegan de forma segura 100% a WhatsApp.
+    handleWhatsappCheckout();
+    return;
     
     try {
       const payload = {
@@ -299,18 +303,30 @@ export default function Cart() {
                     <h3 className="text-xs font-sans tracking-widest uppercase text-text-dark/60 mb-2 mt-8">4. Método de Pago</h3>
                     <div className="flex gap-4">
                       <button 
-                        onClick={() => setPaymentMethod('MERCADOPAGO')}
-                        className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors ${paymentMethod === 'MERCADOPAGO' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
-                      >
-                        Mercado Pago
-                      </button>
-                      <button 
                         onClick={() => setPaymentMethod('TRANSFERENCIA')}
                         className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors flex items-center justify-center gap-2 ${paymentMethod === 'TRANSFERENCIA' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
                       >
-                        Efectivo / Transfer
+                        Transferencia
+                      </button>
+                      <button 
+                        onClick={() => setPaymentMethod('EFECTIVO')}
+                        className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors flex items-center justify-center gap-2 ${paymentMethod === 'EFECTIVO' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
+                      >
+                        Efectivo
                       </button>
                     </div>
+
+                    {paymentMethod === 'TRANSFERENCIA' && (
+                      <div className="animate-in fade-in slide-in-from-top-2 duration-500 mt-4 bg-accent-2/5 border border-accent-2/20 p-4 rounded-sm">
+                        <h4 className="text-[10px] md:text-xs font-heading tracking-widest uppercase text-text-dark mb-3">Datos Bancarios</h4>
+                        <div className="space-y-2 text-[10px] md:text-[11px] font-sans text-text-dark/80">
+                          <p><span className="font-semibold">Titular:</span> Tu Nombre Aquí</p>
+                          <p><span className="font-semibold">CBU/CVU:</span> 0000000000000000000000</p>
+                          <p><span className="font-semibold">Alias:</span> tina.velas.alias</p>
+                        </div>
+                        <p className="text-[9px] text-text-dark/60 mt-4 italic leading-relaxed">*Recuerda enviar el comprobante por WhatsApp una vez hecha la compra para confirmarla en nuestro sistema.*</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -347,10 +363,10 @@ export default function Cart() {
                   <button 
                     onClick={handleCheckout} 
                     disabled={!name || !phone || (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) || processing}
-                    className={`w-full text-white py-4 md:py-5 text-[10px] md:text-[11px] font-sans font-medium hover:brightness-110 disabled:opacity-50 transition-all duration-300 uppercase tracking-[0.25em] rounded-sm flex items-center justify-center space-x-2 ${paymentMethod === 'TRANSFERENCIA' ? 'bg-[#25D366]' : 'bg-[#009EE3]'}`}
+                    className={`w-full bg-[#25D366] text-white py-4 md:py-5 text-[10px] md:text-[11px] font-sans font-medium hover:brightness-110 disabled:opacity-50 transition-all duration-300 uppercase tracking-[0.25em] rounded-sm flex items-center justify-center space-x-2`}
                   >
                     {processing ? <Loader2 className="animate-spin" size={16} /> : null}
-                    <span>{paymentMethod === 'TRANSFERENCIA' ? 'Encargar por WhatsApp' : 'Pagar con Mercado Pago'}</span>
+                    <span>Confirmar por WhatsApp</span>
                   </button>
                 )}
               </div>
