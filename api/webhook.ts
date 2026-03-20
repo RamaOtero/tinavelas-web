@@ -11,6 +11,15 @@ const sanity = createClient({
 });
 
 export default async function handler(req: any, res: any) {
+  // CORS Headers requeridos para que funcione el botón amarillo de "Probar" en Mercado Pago (ya que envía peticiones tipo OPTIONS primero)
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method Not Allowed' });
 
   try {
