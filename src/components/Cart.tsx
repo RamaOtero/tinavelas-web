@@ -86,21 +86,29 @@ export default function Cart() {
   };
 
   return (
-    <AnimatePresence>
-      {isCartOpen && (
-        <>
+    <>
+      <AnimatePresence>
+        {isCartOpen && (
           <motion.div
+            key="backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             onClick={() => toggleCart(false)}
-            className="fixed inset-0 bg-text-dark/40 backdrop-blur-sm z-[100]"
+            className="fixed inset-0 bg-text-dark/60 backdrop-blur-sm z-[100] cursor-pointer"
           />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isCartOpen && (
           <motion.div
+            key="drawer"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: "spring", damping: 25, stiffness: 20 }}
+            transition={{ type: "tween", ease: "easeOut", duration: 0.35 }}
             className="fixed top-0 right-0 h-full w-full max-w-md bg-bg-light z-[110] shadow-2xl flex flex-col"
           >
             {/* Header */}
@@ -253,8 +261,8 @@ export default function Cart() {
               </div>
             )}
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

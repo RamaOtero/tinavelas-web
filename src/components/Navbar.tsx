@@ -72,9 +72,6 @@ export default function Navbar() {
             Cuidados
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
-          <span className="hidden lg:inline opacity-60 cursor-default uppercase whitespace-nowrap" title="Próximamente">
-            ¡Pronto Carrito!
-          </span>
           {/* Cart Icon */}
           <button onClick={() => toggleCart(true)} className="relative hover:opacity-70 transition-opacity ml-2 group flex items-center justify-center">
             <ShoppingBag size={18} strokeWidth={1.5} />

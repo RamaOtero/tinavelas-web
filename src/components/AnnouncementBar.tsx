@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 export default function AnnouncementBar() {
   // Duplicamos el mensaje múltiples veces para lograr el efecto infinito sin cortes matemáticos.
-  const messages = Array(12).fill("PRONTO CARRITO • @TINAVELASARTESANALES • ENVÍOS LA PLATA");
+  const messages = Array(12).fill("VELAS DE SOJA PREMIUM • @TINAVELASARTESANALES • ENVÍOS LA PLATA");
 
   return (
     <div className="bg-text-dark text-bg-light overflow-hidden h-8 flex items-center absolute top-0 w-full z-[60]">
