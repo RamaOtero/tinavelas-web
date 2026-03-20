@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X, Loader2 } from 'lucide-react';
-import { ChevronLeft, ChevronRight, X, Loader2 } from 'lucide-react';
 import { sanityClient, urlFor } from '../sanity';
 import { useCartStore } from '../store/useCartStore';
 import { toast } from 'react-hot-toast';

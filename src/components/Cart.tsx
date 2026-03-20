@@ -10,6 +10,7 @@ export default function Cart() {
   const [view, setView] = useState<'CART' | 'CHECKOUT'>('CART');
   
   // Checkout Form State
+  const [deliveryMethod, setDeliveryMethod] = useState<'SHIPPING' | 'PICKUP'>('SHIPPING');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
@@ -34,7 +35,7 @@ export default function Cart() {
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const isFreeShipping = freeThreshold > 0 && subtotal >= freeThreshold;
-  const finalShipping = isFreeShipping ? 0 : shippingCost;
+  const finalShipping = deliveryMethod === 'PICKUP' ? 0 : (isFreeShipping ? 0 : shippingCost);
   const total = subtotal + finalShipping;
 
   const formatPrice = (price: number) => {
@@ -42,7 +43,14 @@ export default function Cart() {
   };
 
   const handleCheckout = async () => {
-    if (!name || !phone || !address || !coordinates) return;
+    if (!name || !phone) {
+       alert("Por favor completa tu nombre y WhatsApp.");
+       return;
+    }
+    if (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) {
+       alert("Por favor ingresa tu dirección y ubícala en el mapa para el envío.");
+       return;
+    }
     setProcessing(true);
     
     try {
@@ -55,8 +63,10 @@ export default function Cart() {
           image: i.image && i.image.asset ? urlFor(i.image).url() : null 
         })),
         customer: { name, phone },
-        delivery: { address, lat: coordinates.lat, lng: coordinates.lng },
-        isFreeShipping
+        delivery: deliveryMethod === 'SHIPPING' 
+          ? { address, lat: coordinates?.lat, lng: coordinates?.lng }
+          : { address: 'A coordinar retiro por WhatsApp', lat: null, lng: null },
+        isFreeShipping: deliveryMethod === 'PICKUP' ? true : isFreeShipping
       };
 
       const response = await fetch('/api/checkout', {
@@ -204,21 +214,50 @@ export default function Cart() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xs font-sans tracking-widest uppercase text-text-dark/60">2. Envío en La Plata</h3>
-                      <MapPin size={16} className="text-accent-2" strokeWidth={1.5} />
+                    <h3 className="text-xs font-sans tracking-widest uppercase text-text-dark/60 mb-2 mt-4">2. Método de Entrega</h3>
+                    <div className="flex gap-4">
+                      <button 
+                        onClick={() => setDeliveryMethod('SHIPPING')}
+                        className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors ${deliveryMethod === 'SHIPPING' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
+                      >
+                        Envío a Domicilio
+                      </button>
+                      <button 
+                        onClick={() => setDeliveryMethod('PICKUP')}
+                        className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors ${deliveryMethod === 'PICKUP' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
+                      >
+                        Punto de Retiro
+                      </button>
                     </div>
-                    <input 
-                      type="text" placeholder="Dirección escrita (Calle, número, depto)" value={address} onChange={e => setAddress(e.target.value)}
-                      className="w-full bg-transparent border-b border-text-dark/20 py-2 text-sm font-sans focus:outline-none focus:border-text-dark transition-colors placeholder:text-text-dark/30"
-                    />
-                    
-                    <div className="pt-2">
-                      <p className="text-[10px] font-sans tracking-wide text-text-dark/60 mb-3 leading-relaxed">
-                        Mueve el mapa y haz **click sobre tu casa** para marcar el punto exacto al que debe llegar el repartidor.
-                      </p>
-                      <CheckoutMap onLocationSelect={(lat, lng) => setCoordinates({ lat, lng })} />
-                    </div>
+
+                    {deliveryMethod === 'SHIPPING' ? (
+                      <div className="space-y-4 animate-in fade-in duration-500 pt-2">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-xs font-sans tracking-widest uppercase text-text-dark/60">3. Datos de Envío</h3>
+                          <MapPin size={16} className="text-accent-2" strokeWidth={1.5} />
+                        </div>
+                        <input 
+                          type="text" placeholder="Dirección escrita (Calle, número, depto)" value={address} onChange={e => setAddress(e.target.value)}
+                          className="w-full bg-transparent border-b border-text-dark/20 py-2 text-sm font-sans focus:outline-none focus:border-text-dark transition-colors placeholder:text-text-dark/30"
+                        />
+                        
+                        <div className="pt-2">
+                          <p className="text-[10px] font-sans tracking-wide text-text-dark/60 mb-3 leading-relaxed">
+                            Mueve el mapa y haz click sobre tu casa para marcar el punto exacto al que debe llegar el repartidor.
+                          </p>
+                          <CheckoutMap onLocationSelect={(lat, lng) => setCoordinates({ lat, lng })} />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="pt-4 animate-in fade-in duration-500">
+                        <div className="bg-accent-2/10 border border-accent-2/20 rounded-sm p-4 text-center">
+                          <h4 className="text-[10px] md:text-xs font-heading tracking-widest uppercase text-text-dark mb-2">A coordinar por WhatsApp</h4>
+                          <p className="text-[9px] md:text-[10px] font-sans text-text-dark/70 leading-relaxed">
+                            Una vez efectuado el pago, nos pondremos en contacto a tu WhatsApp provisto para coordinar la entrega personal del producto en La Plata.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -235,7 +274,7 @@ export default function Cart() {
                     </div>
                     <div className="flex justify-between items-center text-xs font-sans text-text-dark/70">
                       <span>Envío Privado</span>
-                      <span>{isFreeShipping ? 'Bonificado' : formatPrice(shippingCost)}</span>
+                      <span>{deliveryMethod === 'PICKUP' ? 'A coordinar' : (isFreeShipping ? 'Bonificado' : formatPrice(shippingCost))}</span>
                     </div>
                   </div>
                 )}

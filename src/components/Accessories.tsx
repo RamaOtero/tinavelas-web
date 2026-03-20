@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { sanityClient, urlFor } from '../sanity';
-import { sanityClient, urlFor } from '../sanity';
 import { useCartStore } from '../store/useCartStore';
 import { toast } from 'react-hot-toast';
 
