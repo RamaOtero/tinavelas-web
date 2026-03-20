@@ -12,6 +12,7 @@ export interface Candle {
   priceNumber: number;
   stock: number;
   description: string;
+  allowedScents?: string[];
   images: any[]; 
 }
 
@@ -23,6 +24,7 @@ type LightboxState = {
 function ProductCard({ product, index, openLightbox }: { product: Candle; index: number; openLightbox: (state: LightboxState) => void }) {
   const [currentImage, setCurrentImage] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [selectedScent, setSelectedScent] = useState<string>(product.allowedScents && product.allowedScents.length > 0 ? product.allowedScents[0] : '');
   const images = product.images || [];
 
   const isMdStaggered = index % 2 === 1;
@@ -61,12 +63,17 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
       alert('Esta pieza requiere configuración de precio en el panel para ser encargada online.');
       return;
     }
+    if (product.allowedScents && product.allowedScents.length > 0 && !selectedScent) {
+      alert('Por favor selecciona un aroma para tu vela.');
+      return;
+    }
     
     addItem({
       id: product._id,
       name: product.name,
       price: product.priceNumber,
       stock: product.stock !== undefined ? product.stock : 10,
+      scent: selectedScent || undefined, // Adjuntamos la esencia a Zustand
       image: hasImages ? images[0] : null,
     });
   };
@@ -126,13 +133,28 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
         )}
       </div>
 
-      <div className="flex flex-col items-center text-center px-4">
+      <div className="flex flex-col items-center text-center px-4 w-full">
         <h3 className="text-sm md:text-base font-sans tracking-widest uppercase mb-1">{product.name}</h3>
         <p className="text-[9px] md:text-[10px] text-text-dark/50 font-sans tracking-[0.2em] uppercase mb-4">por {product.creator || 'Colección Lujo'}</p>
         <div className="w-8 h-[1px] bg-accent-2/60 mb-4"></div>
-        <p className="text-[11px] font-sans text-text-dark/80 font-light leading-relaxed max-w-xs mb-6">{product.description}</p>
+        <p className="text-[11px] font-sans text-text-dark/80 font-light leading-relaxed max-w-xs mb-6 h-12 overflow-hidden">{product.description}</p>
 
-        <button onClick={handleAddToCart} className="border border-text-dark/40 text-text-dark px-10 py-3 text-[9px] md:text-[10px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-text-dark hover:border-text-dark hover:text-bg-light transition-all duration-300 rounded-sm">
+        {product.allowedScents && product.allowedScents.length > 0 && (
+          <div className="w-full mb-6">
+            <select
+              value={selectedScent}
+              onChange={(e) => setSelectedScent(e.target.value)}
+              className="w-full bg-transparent border-b border-text-dark/20 py-2 text-[9px] md:text-[10px] font-sans tracking-[0.1em] text-center focus:outline-none focus:border-text-dark transition-colors appearance-none cursor-pointer"
+            >
+              {product.allowedScents.map(scent => (
+                <option key={scent} value={scent} className="text-text-dark">{scent.toUpperCase()}</option>
+              ))}
+            </select>
+            <p className="text-[8px] text-text-dark/40 mt-1 uppercase tracking-widest">Aroma Personalizado</p>
+          </div>
+        )}
+
+        <button onClick={handleAddToCart} className="border border-text-dark/40 w-full text-text-dark px-2 py-3 text-[9px] md:text-[10px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-text-dark hover:border-text-dark hover:text-bg-light transition-all duration-300 rounded-sm mt-auto">
           {product.stock === 0 ? 'Encargar a Medida' : `Agregar por ${product.price}`}
         </button>
       </div>
@@ -154,6 +176,7 @@ export default function ProductList() {
       priceNumber,
       stock,
       description,
+      allowedScents,
       images
     }`).then((data) => {
       setCandles(data);

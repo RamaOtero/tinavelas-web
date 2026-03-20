@@ -49,9 +49,9 @@ export default function Cart() {
       const payload = {
         // Enviar datos encriptados hacia nuestro blindaje en Vercel
         items: items.map(i => ({ 
-          id: i.id, 
+          id: i.id, // ID físico real en BD
           quantity: i.quantity, 
-          name: i.name, 
+          name: i.scent ? `${i.name} (${i.scent})` : i.name, // Empaquetar el aroma para que MP genere el recibo completo.
           image: i.image && i.image.asset ? urlFor(i.image).url() : null 
         })),
         customer: { name, phone },
@@ -139,7 +139,7 @@ export default function Cart() {
                   </div>
                 ) : (
                   items.map((item) => (
-                    <div key={item.id} className="flex gap-6 items-center">
+                    <div key={item.cartItemId || item.id} className="flex gap-6 items-center">
                       <div className="w-20 h-28 md:w-24 md:h-32 bg-accent-1/10 rounded-sm shrink-0 overflow-hidden relative">
                         {item.image ? (
                           <img src={urlFor(item.image).width(200).url()} alt={item.name} className="w-full h-full object-cover" />
@@ -151,7 +151,10 @@ export default function Cart() {
                       <div className="flex-1 flex flex-col h-full justify-between py-1">
                         <div>
                           <h3 className="text-xs md:text-sm font-heading font-medium tracking-widest uppercase mb-1">{item.name}</h3>
-                          <p className="text-[10px] md:text-[11px] font-sans tracking-widest text-text-dark/60 mb-2">{formatPrice(item.price)}</p>
+                          {item.scent && (
+                            <p className="text-[9.5px] font-sans tracking-widest text-text-dark/60 mb-2 uppercase border border-text-dark/20 inline-block px-1.5 py-0.5 rounded-sm bg-text-dark/5">{item.scent}</p>
+                          )}
+                          <p className={`text-[10px] md:text-[11px] font-sans tracking-widest mb-2 ${item.scent ? 'text-text-dark/80' : 'text-text-dark/60'}`}>{formatPrice(item.price)}</p>
                           {item.stock === 0 && (
                             <span className="inline-block bg-accent-2/10 text-accent-2 text-[8px] tracking-widest uppercase px-2 py-0.5 rounded-sm">A Pedido</span>
                           )}
@@ -160,7 +163,7 @@ export default function Cart() {
                         <div className="flex items-center justify-between mt-auto">
                           <div className="flex items-center border border-accent-2/40 rounded-sm relative">
                             <button 
-                              onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                              onClick={() => updateQuantity(item.cartItemId || item.id, Math.max(1, item.quantity - 1))}
                               className="p-1.5 md:p-2 hover:bg-accent-2/10 transition-colors"
                             >
                               <Minus size={12} strokeWidth={1.5} />
@@ -169,7 +172,7 @@ export default function Cart() {
                             <button 
                               onClick={() => {
                                 if (item.stock === 0 || item.quantity < item.stock) {
-                                  updateQuantity(item.id, item.quantity + 1);
+                                  updateQuantity(item.cartItemId || item.id, item.quantity + 1);
                                 }
                               }}
                               className="p-1.5 md:p-2 hover:bg-accent-2/10 transition-colors"
@@ -177,7 +180,7 @@ export default function Cart() {
                               <Plus size={12} strokeWidth={1.5} />
                             </button>
                           </div>
-                          <button onClick={() => removeItem(item.id)} className="text-text-dark/40 hover:text-red-800 transition-colors p-2">
+                          <button onClick={() => removeItem(item.cartItemId || item.id)} className="text-text-dark/40 hover:text-red-800 transition-colors p-2">
                             <Trash2 size={16} strokeWidth={1.5} />
                           </button>
                         </div>
