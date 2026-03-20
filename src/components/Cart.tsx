@@ -11,6 +11,7 @@ export default function Cart() {
   
   // Checkout Form State
   const [deliveryMethod, setDeliveryMethod] = useState<'SHIPPING' | 'PICKUP'>('SHIPPING');
+  const [paymentMethod, setPaymentMethod] = useState<'MERCADOPAGO' | 'TRANSFERENCIA'>('MERCADOPAGO');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
@@ -42,15 +43,43 @@ export default function Cart() {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }).format(price);
   };
 
+  const handleTransferenciaCheckout = () => {
+    let msg = `*NUEVO PEDIDO - TINA VELAS* 🕯️\n\n`;
+    msg += `*Cliente:* ${name}\n`;
+    msg += `*WhatsApp:* ${phone}\n`;
+    msg += `*Entrega:* ${deliveryMethod === 'PICKUP' ? '📦 Retiro en Punto a coordinar' : `📍 Envío a ${address}`}\n\n`;
+    msg += `*MI CARRITO:*\n`;
+    items.forEach(item => {
+      msg += `- ${item.quantity}x ${item.name} ${item.scent ? `(Aroma: ${item.scent}) ` : ''}- ${formatPrice(item.price * item.quantity)}\n`;
+    });
+    msg += `\n*Subtotal:* ${formatPrice(subtotal)}\n`;
+    msg += `*Envío:* ${deliveryMethod === 'PICKUP' ? 'Bonificado' : (isFreeShipping ? 'Bonificado' : formatPrice(shippingCost))}\n`;
+    msg += `*TOTAL A TRANSFERIR: ${formatPrice(total)}*\n\n`;
+    msg += `¡Hola! Confirmo este pedido para pagar por transferencia bancaria. Espero los datos de la cuenta.`;
+    
+    const encodedMsg = encodeURIComponent(msg);
+    // Número base extraído del Floating Widget configurado.
+    window.open(`https://wa.me/5492216031496?text=${encodedMsg}`, '_blank');
+    clearCart();
+    toast.success('¡Redirigiendo a WhatsApp!', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em'} });
+    toggleCart(false);
+  };
+
   const handleCheckout = async () => {
     if (!name || !phone) {
-       alert("Por favor completa tu nombre y WhatsApp.");
+       toast.error("Por favor completa tu nombre y WhatsApp.");
        return;
     }
     if (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) {
-       alert("Por favor ingresa tu dirección y ubícala en el mapa para el envío.");
+       toast.error("Por favor ingresa tu dirección y ubícala en el mapa para el envío.");
        return;
     }
+
+    if (paymentMethod === 'TRANSFERENCIA') {
+      handleTransferenciaCheckout();
+      return;
+    }
+
     setProcessing(true);
     
     try {
@@ -75,14 +104,14 @@ export default function Cart() {
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || 'Error al procesar la bóveda bancaria');
+        throw new Error('Error al conectar con el servidor bancario.');
       }
 
+      const data = await response.json();
+      
       if (data.init_point) {
-        // Todo autorizado de lado de Vercel y Sanity, mandamos al cliente a la ventana oficial de Mercado Pago!
+        // Redirigir al cliente a la bóveda encriptada de Mercado Pago
         window.location.href = data.init_point; 
       } else {
          throw new Error('No se pudo generar el enlace de pago seguro');
@@ -90,7 +119,7 @@ export default function Cart() {
 
     } catch (error: any) {
       console.error(error);
-      alert('Hubo un problema procesando la orden: ' + error.message);
+      toast.error('Hubo un problema procesando la orden: ' + error.message);
       setProcessing(false);
     }
   };
@@ -258,6 +287,24 @@ export default function Cart() {
                         </div>
                       </div>
                     )}
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-sans tracking-widest uppercase text-text-dark/60 mb-2 mt-8">4. Método de Pago</h3>
+                    <div className="flex gap-4">
+                      <button 
+                        onClick={() => setPaymentMethod('MERCADOPAGO')}
+                        className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors ${paymentMethod === 'MERCADOPAGO' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
+                      >
+                        Mercado Pago
+                      </button>
+                      <button 
+                        onClick={() => setPaymentMethod('TRANSFERENCIA')}
+                        className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors flex items-center justify-center gap-2 ${paymentMethod === 'TRANSFERENCIA' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
+                      >
+                        Transferencia
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

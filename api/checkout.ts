@@ -96,8 +96,8 @@ export default async function handler(req: any, res: any) {
       auto_return: 'approved',
       metadata: {
         delivery_address: delivery.address,
-        delivery_lat: delivery.lat,
-        delivery_lng: delivery.lng
+        ...(delivery.lat ? { delivery_lat: delivery.lat } : {}),
+        ...(delivery.lng ? { delivery_lng: delivery.lng } : {})
       }
     };
 
