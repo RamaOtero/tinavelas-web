@@ -341,11 +341,11 @@ export default function Cart() {
                 ) : (
                   <button 
                     onClick={handleCheckout} 
-                    disabled={!name || !phone || !address || !coordinates || processing}
-                    className="w-full bg-[#009EE3] text-white py-4 md:py-5 text-[10px] md:text-[11px] font-sans font-medium hover:brightness-110 disabled:opacity-50 transition-all duration-300 uppercase tracking-[0.25em] rounded-sm flex items-center justify-center space-x-2"
+                    disabled={!name || !phone || (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) || processing}
+                    className={`w-full text-white py-4 md:py-5 text-[10px] md:text-[11px] font-sans font-medium hover:brightness-110 disabled:opacity-50 transition-all duration-300 uppercase tracking-[0.25em] rounded-sm flex items-center justify-center space-x-2 ${paymentMethod === 'TRANSFERENCIA' ? 'bg-[#25D366]' : 'bg-[#009EE3]'}`}
                   >
                     {processing ? <Loader2 className="animate-spin" size={16} /> : null}
-                    <span>Pagar con Mercado Pago</span>
+                    <span>{paymentMethod === 'TRANSFERENCIA' ? 'Encargar por WhatsApp' : 'Pagar con Mercado Pago'}</span>
                   </button>
                 )}
               </div>
