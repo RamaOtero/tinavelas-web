@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Loader2 } from 'lucide-react';
 import { sanityClient, urlFor } from '../sanity';
 import { useCartStore } from '../store/useCartStore';
+import { toast } from 'react-hot-toast';
 
 export interface Candle {
   _id: string;
@@ -60,11 +62,11 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
 
   const handleAddToCart = () => {
     if (!product.priceNumber) {
-      alert('Esta pieza requiere configuración de precio en el panel para ser encargada online.');
+      toast.error('Esta pieza requiere precio de panel.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em'} });
       return;
     }
     if (product.allowedScents && product.allowedScents.length > 0 && !selectedScent) {
-      alert('Por favor selecciona un aroma para tu vela.');
+      toast.error('Por favor selecciona un aroma.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em'} });
       return;
     }
     

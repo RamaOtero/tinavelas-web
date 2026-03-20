@@ -89,9 +89,9 @@ export default async function handler(req: any, res: any) {
         }
       },
       back_urls: {
-        success: 'https://tinavelas-web.vercel.app/?status=success',
-        failure: 'https://tinavelas-web.vercel.app/?status=failure',
-        pending: 'https://tinavelas-web.vercel.app/?status=pending',
+        success: 'https://tinavelas.com/?status=success',
+        failure: 'https://tinavelas.com/?status=failure',
+        pending: 'https://tinavelas.com/?status=pending',
       },
       auto_return: 'approved',
       metadata: {

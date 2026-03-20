@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { sanityClient, urlFor } from '../sanity';
+import { sanityClient, urlFor } from '../sanity';
 import { useCartStore } from '../store/useCartStore';
+import { toast } from 'react-hot-toast';
 
 interface Accessory {
   _id: string;
@@ -30,7 +32,7 @@ export default function Accessories() {
 
   const handleAddToCart = (product: Accessory) => {
     if (!product.priceNumber) {
-      alert('Esta herramienta requiere un precio ingresado en el panel central de Sanity para comprarse online.');
+      toast.error('Requiere precio en Sanity para añadir.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em'} });
       return;
     }
     

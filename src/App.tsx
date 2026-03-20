@@ -12,6 +12,7 @@ import Footer from './components/Footer';
 import WhatsAppFloating from './components/WhatsAppFloating';
 import { useEffect } from 'react';
 import { useCartStore } from './store/useCartStore';
+import { Toaster, toast } from 'react-hot-toast';
 
 function App() {
   const { clearCart } = useCartStore();
@@ -24,18 +25,19 @@ function App() {
     if (status === 'success') {
       clearCart();
       window.history.replaceState({}, '', '/'); // Limpiar la URL de fondo
-      setTimeout(() => alert('¡Pago Aprobado! 🥂 Hemos recibido tu orden y prepararemos tu paquete.'), 800);
+      setTimeout(() => toast.success('¡Pago Aprobado! 🥂 Hemos recibido tu orden.', { duration: 6000, style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', border: '1px solid rgba(118, 107, 93, 0.2)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' } }), 800);
     } else if (status === 'failure') {
       window.history.replaceState({}, '', '/');
-      setTimeout(() => alert('Upps, el pago fue rechazado. Revisa tu saldo o intenta de nuevo.'), 800);
+      setTimeout(() => toast.error('Upps, el pago fue rechazado. Revisa tu saldo o intenta de nuevo.', { duration: 5000, style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', border: '1px solid rgba(118, 107, 93, 0.2)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' } }), 800);
     } else if (status === 'pending') {
       clearCart();
       window.history.replaceState({}, '', '/');
-      setTimeout(() => alert('Tu pago está pendiente de aprobación bancaria. ¡Te avisaremos!'), 800);
+      setTimeout(() => toast('Tu pago está pendiente de aprobación bancaria.', { icon: '⏳', duration: 5000, style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', border: '1px solid rgba(118, 107, 93, 0.2)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' } }), 800);
     }
   }, [clearCart]);
   return (
     <div className="min-h-screen bg-bg-light text-text-dark selection:bg-accent-2 selection:text-text-dark font-sans relative">
+      <Toaster position="top-center" reverseOrder={false} />
       <AnnouncementBar />
       <Navbar />
       <Cart />
