@@ -194,10 +194,15 @@ export default function Cart() {
                           {item.scent && (
                             <p className="text-[9.5px] font-sans tracking-widest text-text-dark/60 mb-2 uppercase border border-text-dark/20 inline-block px-1.5 py-0.5 rounded-sm bg-text-dark/5">{item.scent}</p>
                           )}
-                          <p className={`text-[10px] md:text-[11px] font-sans tracking-widest mb-2 ${item.scent ? 'text-text-dark/80' : 'text-text-dark/60'}`}>{formatPrice(item.price)}</p>
-                          {item.stock === 0 && (
-                            <span className="inline-block border border-accent-2/60 bg-accent-2/10 text-accent-2 text-[8px] md:text-[9px] tracking-widest uppercase px-2 py-1 rounded-sm mt-1">Por Encargo (Con Demora)</span>
-                          )}
+                          <p className={`text-[10px] md:text-[11px] font-sans tracking-widest mb-0 ${item.scent ? 'text-text-dark/80' : 'text-text-dark/60'}`}>{formatPrice(item.price)}</p>
+                          
+                          <div className="mt-2">
+                            {item.stock === 0 ? (
+                              <span className="inline-block border border-accent-2/60 bg-accent-2/10 text-accent-2 text-[8px] md:text-[9px] tracking-widest uppercase px-2 py-1 rounded-sm">Envase a pedido (Demora Mayor)</span>
+                            ) : (
+                              <span className="inline-block border border-text-dark/20 bg-transparent text-text-dark/60 text-[8px] md:text-[9px] tracking-widest uppercase px-2 py-1 rounded-sm">Armado en 24hs</span>
+                            )}
+                          </div>
                         </div>
                         
                         <div className="flex items-center justify-between mt-auto">
