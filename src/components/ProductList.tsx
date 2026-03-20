@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, X, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, X, Loader2 } from 'lucide-react';
 import { sanityClient, urlFor } from '../sanity';
 import { useCartStore } from '../store/useCartStore';
 import { toast } from 'react-hot-toast';
@@ -26,6 +26,18 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
   const [currentImage, setCurrentImage] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [selectedScent, setSelectedScent] = useState<string>(product.allowedScents && product.allowedScents.length > 0 ? product.allowedScents[0] : '');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   const images = product.images || [];
 
   const isMdStaggered = index % 2 === 1;
@@ -141,17 +153,35 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
         <p className="text-[11px] font-sans text-text-dark/80 font-light leading-relaxed max-w-xs mb-6 h-12 overflow-hidden">{product.description}</p>
 
         {product.allowedScents && product.allowedScents.length > 0 && (
-          <div className="w-full mb-6">
-            <select
-              value={selectedScent}
-              onChange={(e) => setSelectedScent(e.target.value)}
-              className="w-full bg-transparent border-b border-text-dark/20 py-2 text-[9px] md:text-[10px] font-sans tracking-[0.1em] text-center focus:outline-none focus:border-text-dark transition-colors appearance-none cursor-pointer"
+          <div className="w-full mb-5 relative" ref={dropdownRef}>
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-full flex items-center justify-between border-b border-text-dark/20 pb-2 text-[9px] md:text-[10px] font-sans tracking-[0.1em] transition-colors hover:border-text-dark group"
             >
-              {product.allowedScents.map(scent => (
-                <option key={scent} value={scent} className="text-text-dark">{scent.toUpperCase()}</option>
-              ))}
-            </select>
-            <p className="text-[8px] text-text-dark/40 mt-1 uppercase tracking-widest">Aroma Personalizado</p>
+              <span className="flex-1 text-center tracking-[0.2em] pl-4">{selectedScent ? selectedScent.toUpperCase() : 'SELECCIONAR AROMA'}</span>
+              <ChevronDown size={14} className={`text-text-dark/60 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {isDropdownOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}
+                  className="absolute left-0 right-0 top-full mt-1 bg-bg-light border border-accent-2/30 shadow-xl z-20 py-1 rounded-sm overflow-hidden"
+                >
+                  {product.allowedScents.map(scent => (
+                    <button
+                      key={scent}
+                      onClick={() => { setSelectedScent(scent); setIsDropdownOpen(false); }}
+                      className={`w-full text-center py-2.5 px-2 text-[9px] md:text-[10px] font-sans tracking-[0.2em] uppercase transition-colors ${selectedScent === scent ? 'bg-accent-2/10 text-accent-2 font-medium' : 'text-text-dark/70 hover:bg-accent-1/20 hover:text-text-dark'}`}
+                    >
+                      {scent}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <p className="text-[8px] text-text-dark/40 mt-2 uppercase tracking-widest text-center">Aroma Personalizado</p>
           </div>
         )}
 
