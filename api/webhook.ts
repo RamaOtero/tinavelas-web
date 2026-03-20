@@ -20,6 +20,11 @@ export default async function handler(req: any, res: any) {
     return res.status(200).end();
   }
 
+  // Mercado Pago suele hacer un "Pug / Ping" con GET vacío para validar que la URL exista antes de accionar el botón.
+  if (req.method === 'GET') {
+    return res.status(200).json({ status: 'Webhook listener is online.' });
+  }
+
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method Not Allowed' });
 
   try {
