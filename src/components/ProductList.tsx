@@ -186,7 +186,7 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
         )}
 
         <button onClick={handleAddToCart} className="border border-text-dark/40 w-full text-text-dark px-2 py-3 text-[9px] md:text-[10px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-text-dark hover:border-text-dark hover:text-bg-light transition-all duration-300 rounded-sm mt-auto">
-          {product.stock === 0 ? 'Encargar (Tiene demora)' : `Agregar por ${product.price}`}
+          {product.stock === 0 ? `Encargar por ${product.price} (Demora)` : `Agregar por ${product.price}`}
         </button>
       </div>
     </motion.div>

@@ -79,7 +79,7 @@ export default function Accessories() {
               <p className="text-[9px] md:text-[10px] font-sans font-light tracking-[0.05em] text-text-dark/80 mb-6 px-1 leading-relaxed md:h-12 overflow-hidden">{item.description}</p>
 
               <button onClick={() => handleAddToCart(item)} className="border border-accent-2/60 text-text-dark px-2 md:px-6 py-3 text-[8.5px] md:text-[9.5px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-accent-2 hover:border-accent-2 hover:text-bg-light transition-colors duration-300 rounded-sm mt-auto w-full">
-                {item.stock === 0 ? 'Encargar (Tiene demora)' : `Agregar ${item.price ? `(${item.price})` : ''}`}
+                {item.stock === 0 ? `Encargar ${item.price ? `(${item.price})` : ''} - Demora` : `Agregar ${item.price ? `(${item.price})` : ''}`}
               </button>
             </motion.div>
           ))}
