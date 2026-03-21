@@ -78,8 +78,8 @@ export default function Cart() {
   };
 
   const handleCheckout = async () => {
-    if (!name || !phone) {
-      toast.error("Por favor completa tu nombre y WhatsApp.");
+    if (!name || phone.replace(/[^0-9]/g, '').length < 10) {
+      toast.error("Por favor completa tu nombre y un WhatsApp válido (mín. 10 números).");
       return;
     }
     if (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) {
@@ -248,11 +248,13 @@ export default function Cart() {
                   <div className="space-y-4">
                     <h3 className="text-xs font-sans tracking-widest uppercase text-text-dark/60 mb-2">1. Mis Datos</h3>
                     <input
-                      type="text" placeholder="Nombre completo" value={name} onChange={e => setName(e.target.value)}
+                      type="text" placeholder="Nombre completo" value={name} 
+                      onChange={e => setName(e.target.value.replace(/[0-9]/g, ''))}
                       className="w-full bg-transparent border-b border-text-dark/20 py-2 text-sm font-sans focus:outline-none focus:border-text-dark transition-colors placeholder:text-text-dark/30"
                     />
                     <input
-                      type="text" placeholder="WhatsApp (Ej: 221...)" value={phone} onChange={e => setPhone(e.target.value)}
+                      type="tel" placeholder="WhatsApp (Ej: 221...)" value={phone} 
+                      onChange={e => setPhone(e.target.value.replace(/[^0-9+\-()\s]/g, ''))}
                       className="w-full bg-transparent border-b border-text-dark/20 py-2 text-sm font-sans focus:outline-none focus:border-text-dark transition-colors placeholder:text-text-dark/30"
                     />
                   </div>
@@ -375,7 +377,8 @@ export default function Cart() {
                     Continuar al Envío
                   </button>
                 ) : (() => {
-                  const isFormIncomplete = !name || !phone || (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) || !paymentMethod;
+                  const phoneDigits = phone.replace(/[^0-9]/g, '').length;
+                  const isFormIncomplete = !name || phoneDigits < 10 || (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) || !paymentMethod;
                   return (
                     <button
                       onClick={handleCheckout}
