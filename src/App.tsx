@@ -2,6 +2,7 @@ import AnnouncementBar from './components/AnnouncementBar';
 import Navbar from './components/Navbar';
 import Cart from './components/Cart';
 import Hero from './components/Hero';
+import ArtisanalProcess from './components/ArtisanalProcess';
 import ProductList from './components/ProductList';
 import Scents from './components/Scents';
 import Accessories from './components/Accessories';
@@ -43,6 +44,7 @@ function App() {
       <Cart />
       <main>
         <Hero />
+        <ArtisanalProcess />
         <ProductList />
         <Scents />
         <Accessories />
