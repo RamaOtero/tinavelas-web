@@ -241,7 +241,6 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
           <div className="w-full mb-5 relative flex items-center justify-between border-b border-text-dark/20 pb-3">
             <div className="flex flex-col text-left">
               <span className="text-[9px] md:text-[10px] font-sans tracking-[0.2em] text-text-dark uppercase">Etiqueta Frontal</span>
-              <span className="text-[7.5px] font-sans tracking-widest text-text-dark/50 uppercase mt-1">Con o sin envoltorio gráfico</span>
             </div>
             <button 
               onClick={() => setWithLabel(!withLabel)} 
