@@ -37,7 +37,7 @@ function LocationMarker({ onSelect, polygonArea }: { onSelect: (lat: number, lng
         setPosition(e.latlng);
         onSelect(e.latlng.lat, e.latlng.lng);
       } else {
-        toast.error('Fuera de zona: Solo entregamos dentro del rectángulo de Avenidas 32 a 72 y 31 a 122.', { style: { background: '#ef4444', color: '#ffffff', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em'} });
+        toast.error('Fuera de zona: Solo entregamos dentro del rectángulo de Avenidas 32 a 72 y 31 a 122.', { style: { background: '#ef4444', color: '#ffffff', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
       }
     },
   });
@@ -48,7 +48,7 @@ function LocationMarker({ onSelect, polygonArea }: { onSelect: (lat: number, lng
 export default function CheckoutMap({ onLocationSelect }: MapProps) {
   // Centro por defecto: Plaza Moreno, La Plata
   const center: [number, number] = [-34.9205, -57.9536];
-  
+
   // Limitar el mapa exclusivamente al "Casco Urbano" (Cuadrado de La Plata)
   // Limitar el mapa exclusivamente al "Casco Urbano" (Cuadrado de La Plata)
   const cascoUrbanoBounds: L.LatLngBoundsExpression = [
@@ -58,10 +58,10 @@ export default function CheckoutMap({ onLocationSelect }: MapProps) {
 
   // Hueco transparente de la Circunvalación (Dirección Anti-horaria para crear el hueco real SVG)
   const innerHole: [number, number][] = [
-    [-34.8973, -57.9620], // Norte (Av. 32 y 120)
-    [-34.9080, -57.9902], // Oeste (Av. 32 y 31)
-    [-34.9431, -57.9566], // Sur (Av. 72 y 31)
-    [-34.9351, -57.9242]  // Este (Av. 72 y 120)
+    [-34.8900, -57.9570], // Norte (Av. 32 y 120)
+    [-34.9230, -57.9940], // Oeste (Av. 32 y 31)
+    [-34.9540, -57.9530], // Sur (Av. 72 y 31)
+    [-34.9200, -57.9150]  // Este (Av. 72 y 120)
   ];
 
   // Máscara gigante para tapar el resto del mundo
@@ -75,11 +75,11 @@ export default function CheckoutMap({ onLocationSelect }: MapProps) {
   return (
     <div className="w-full h-48 md:h-56 bg-accent-1/20 rounded-sm relative overflow-hidden ring-1 ring-accent-2/20">
       {/* Es imperativo que el z-index del mapa sea 0 para que no rompa el drawer de UI superior */}
-      <MapContainer 
-        center={center} 
-        zoom={13} 
+      <MapContainer
+        center={center}
+        zoom={13}
         minZoom={12}
-        scrollWheelZoom={true} 
+        scrollWheelZoom={true}
         maxBounds={cascoUrbanoBounds}
         maxBoundsViscosity={1.0}
         className="w-full h-full z-0"
@@ -88,9 +88,9 @@ export default function CheckoutMap({ onLocationSelect }: MapProps) {
           attribution='&copy; OpenStreetMap'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
-        <Polygon 
-          positions={[outerWorld, innerHole]} 
-          pathOptions={{ color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.15, stroke: false }} 
+        <Polygon
+          positions={[outerWorld, innerHole]}
+          pathOptions={{ color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.15, stroke: false }}
         />
         {/* Usamos el array geométrico para validar el click internamente */}
         <LocationMarker onSelect={onLocationSelect} polygonArea={innerHole} />
