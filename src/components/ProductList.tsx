@@ -22,10 +22,16 @@ type LightboxState = {
   index: number;
 } | null;
 
-function ProductCard({ product, index, openLightbox }: { product: Candle; index: number; openLightbox: (state: LightboxState) => void }) {
+function ProductCard({ product, index, globalScents, openLightbox }: { product: Candle; index: number; globalScents: string[]; openLightbox: (state: LightboxState) => void }) {
   const [currentImage, setCurrentImage] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [selectedScent, setSelectedScent] = useState<string>(product.allowedScents && product.allowedScents.length > 0 ? product.allowedScents[0] : '');
+  const [selectedScent, setSelectedScent] = useState<string>(globalScents.length > 0 ? globalScents[0] : '');
+
+  useEffect(() => {
+    if (globalScents.length > 0 && !selectedScent) {
+      setSelectedScent(globalScents[0]);
+    }
+  }, [globalScents, selectedScent]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -76,7 +82,7 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
       toast.error('Esta pieza requiere precio de panel.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
       return;
     }
-    if (product.allowedScents && product.allowedScents.length > 0 && !selectedScent) {
+    if (globalScents.length > 0 && !selectedScent) {
       toast.error('Por favor selecciona un aroma.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
       return;
     }
@@ -152,7 +158,7 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
         <div className="w-8 h-[1px] bg-accent-2/60 mb-4"></div>
         <p className="text-[11px] font-sans text-text-dark/80 font-light leading-relaxed max-w-xs mb-6 h-12 overflow-hidden">{product.description}</p>
 
-        {product.allowedScents && product.allowedScents.length > 0 && (
+        {globalScents.length > 0 && (
           <div className="w-full mb-5 relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -168,7 +174,7 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
                   initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}
                   className="absolute left-0 right-0 top-full mt-1 bg-bg-light border border-accent-2/30 shadow-xl z-20 py-1 rounded-sm overflow-hidden"
                 >
-                  {product.allowedScents.map(scent => (
+                  {globalScents.map(scent => (
                     <button
                       key={scent}
                       onClick={() => { setSelectedScent(scent); setIsDropdownOpen(false); }}
@@ -201,12 +207,19 @@ function ProductCard({ product, index, openLightbox }: { product: Candle; index:
 
 export default function ProductList() {
   const [candles, setCandles] = useState<Candle[]>([]);
+  const [globalScents, setGlobalScents] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<LightboxState>(null);
 
   useEffect(() => {
+    sanityClient.fetch(`*[_type == "scent"] | order(name asc) { name }`)
+      .then((data) => {
+        setGlobalScents(data.map((s: any) => s.name));
+      })
+      .catch(console.error);
+
     sanityClient.fetch(`*[_type == "candle"] | order(_createdAt asc) {
-        _id, name, creator, price, priceNumber, stock, description, images, "allowedScents": allowedScents[]->name
+        _id, name, creator, price, priceNumber, stock, description, images
       }`).then((data) => {
       setCandles(data);
       setLoading(false);
@@ -265,8 +278,8 @@ export default function ProductList() {
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-8">
-              {candles.map((product, index) => (
-                <ProductCard key={product._id} product={product} index={index} openLightbox={setLightbox} />
+              {candles.map((candle, index) => (
+                <ProductCard key={candle._id} product={candle} index={index} globalScents={globalScents} openLightbox={setLightbox} />
               ))}
             </div>
           )}
