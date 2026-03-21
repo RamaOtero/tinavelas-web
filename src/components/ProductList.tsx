@@ -25,13 +25,7 @@ type LightboxState = {
 function ProductCard({ product, index, globalScents, openLightbox }: { product: Candle; index: number; globalScents: string[]; openLightbox: (state: LightboxState) => void }) {
   const [currentImage, setCurrentImage] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [selectedScent, setSelectedScent] = useState<string>(globalScents.length > 0 ? globalScents[0] : '');
-
-  useEffect(() => {
-    if (globalScents.length > 0 && !selectedScent) {
-      setSelectedScent(globalScents[0]);
-    }
-  }, [globalScents, selectedScent]);
+  const [selectedScent, setSelectedScent] = useState<string>('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
