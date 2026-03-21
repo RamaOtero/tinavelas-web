@@ -114,7 +114,7 @@ function ProductCard({ product, index, globalScents, openLightbox }: { product: 
         onTouchEnd={handleTouchEnd}
       >
         <AnimatePresence initial={false} mode="popLayout">
-          {hasImages ? (
+          {hasImages && images[currentImage] && images[currentImage].asset ? (
             <motion.img
               key={currentImage}
               initial={{ opacity: 0 }}
@@ -292,7 +292,14 @@ export default function ProductList() {
             {lightbox.product.images.length > 1 && <button onClick={handleLightboxNext} className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 text-bg-light/60 hover:text-bg-light hover:scale-110 transition-all z-[110] p-4 cursor-pointer"><ChevronRight size={40} strokeWidth={1} /></button>}
 
             <AnimatePresence mode="wait">
-              <motion.img key={lightbox.index} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }} src={urlFor(lightbox.product.images[lightbox.index]).url()} alt={`${lightbox.product.name} - Vista completa ${lightbox.index + 1}`} className="w-auto h-auto max-w-full max-h-full object-contain cursor-default shadow-2xl rounded-sm" onClick={(e) => e.stopPropagation()} />
+              {lightbox.product.images[lightbox.index]?.asset ? (
+                <motion.img key={lightbox.index} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }} src={urlFor(lightbox.product.images[lightbox.index]).url()} alt={`${lightbox.product.name} - Vista completa ${lightbox.index + 1}`} className="w-auto h-auto max-w-full max-h-full object-contain cursor-default shadow-2xl rounded-sm" onClick={(e) => e.stopPropagation()} />
+              ) : (
+                <motion.div key={lightbox.index} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-80 h-[400px] flex flex-col items-center justify-center bg-bg-light rounded-sm shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                  <Flame size={64} strokeWidth={1} className="text-text-dark/20 mb-4" />
+                  <span className="text-xs font-sans tracking-[0.3em] uppercase text-text-dark/40">Tina Velas</span>
+                </motion.div>
+              )}
             </AnimatePresence>
 
             {lightbox.product.images.length > 1 && (
