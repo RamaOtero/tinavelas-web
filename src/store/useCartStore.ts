@@ -9,6 +9,7 @@ export interface CartItem {
   quantity: number;
   stock: number;
   scent?: string;
+  lid?: string;
   image?: any;
 }
 
@@ -31,8 +32,10 @@ export const useCartStore = create<CartState>()(
 
       addItem: (newItem) => {
         const { items } = get();
-        // ID combinando vela física real + aroma virtual
-        const cartItemId = newItem.scent ? `${newItem.id}-${newItem.scent}` : newItem.id;
+        // ID combinando vela física real + aroma virtual + tapa virtual
+        const scentStr = newItem.scent ? `-${newItem.scent}` : '';
+        const lidStr = newItem.lid ? `-${newItem.lid}` : '';
+        const cartItemId = `${newItem.id}${scentStr}${lidStr}`;
         const completeItem = { ...newItem, cartItemId };
 
         const existingItem = items.find((i) => i.cartItemId === cartItemId);

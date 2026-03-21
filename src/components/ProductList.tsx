@@ -12,8 +12,9 @@ export interface Candle {
   price: string;
   priceNumber: number;
   stock: number;
+  stock: number;
   description: string;
-  allowedScents?: string[];
+  hasLids?: boolean;
   images: any[];
 }
 
@@ -22,17 +23,24 @@ type LightboxState = {
   index: number;
 } | null;
 
-function ProductCard({ product, index, globalScents, openLightbox }: { product: Candle; index: number; globalScents: string[]; openLightbox: (state: LightboxState) => void }) {
+function ProductCard({ product, index, globalScents, globalLids, openLightbox }: { product: Candle; index: number; globalScents: string[]; globalLids: string[]; openLightbox: (state: LightboxState) => void }) {
   const [currentImage, setCurrentImage] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [selectedScent, setSelectedScent] = useState<string>('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const [selectedLid, setSelectedLid] = useState<string>('');
+  const [isLidDropdownOpen, setIsLidDropdownOpen] = useState(false);
+  const lidDropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+      }
+      if (lidDropdownRef.current && !lidDropdownRef.current.contains(event.target as Node)) {
+        setIsLidDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -80,6 +88,10 @@ function ProductCard({ product, index, globalScents, openLightbox }: { product: 
       toast.error('Por favor selecciona un aroma.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
       return;
     }
+    if (product.hasLids && globalLids.length > 0 && !selectedLid) {
+      toast.error('Por favor selecciona una tapa para el envase.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
+      return;
+    }
 
     addItem({
       id: product._id,
@@ -87,6 +99,7 @@ function ProductCard({ product, index, globalScents, openLightbox }: { product: 
       price: product.priceNumber,
       stock: product.stock !== undefined ? product.stock : 10,
       scent: selectedScent || undefined, // Adjuntamos la esencia a Zustand
+      lid: (product.hasLids && selectedLid) ? selectedLid : undefined, // Adjuntamos la tapa
       image: hasImages ? images[0] : null,
     });
   };
@@ -188,6 +201,39 @@ function ProductCard({ product, index, globalScents, openLightbox }: { product: 
           </div>
         )}
 
+        {product.hasLids && globalLids.length > 0 && (
+          <div className="w-full mb-5 relative" ref={lidDropdownRef}>
+            <button
+              onClick={() => setIsLidDropdownOpen(!isLidDropdownOpen)}
+              className="w-full flex items-center justify-between border-b border-text-dark/20 pb-2 text-[9px] md:text-[10px] font-sans tracking-[0.1em] transition-colors hover:border-text-dark group"
+            >
+              <span className="flex-1 text-center tracking-[0.2em] pl-4">{selectedLid ? selectedLid.toUpperCase() : 'SELECCIONAR TAPA'}</span>
+              <ChevronDown size={14} className={`text-text-dark/60 transition-transform duration-300 ${isLidDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {isLidDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}
+                  className="absolute left-0 right-0 top-full mt-1 bg-bg-light border border-accent-2/30 shadow-xl z-20 py-1 rounded-sm overflow-hidden"
+                >
+                  {globalLids.map(lidOption => (
+                    <button
+                      key={lidOption}
+                      onClick={() => { setSelectedLid(lidOption); setIsLidDropdownOpen(false); }}
+                      className={`w-full text-center py-2.5 px-2 text-[9px] md:text-[10px] font-sans tracking-[0.2em] uppercase transition-colors ${selectedLid === lidOption ? 'bg-accent-2/10 text-accent-2 font-medium' : 'text-text-dark/70 hover:bg-accent-1/20 hover:text-text-dark'}`}
+                    >
+                      {lidOption}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <p className="text-[8px] text-text-dark/40 mt-2 uppercase tracking-widest text-center">Tipo de Tapa</p>
+          </div>
+        )}
+
         <button onClick={handleAddToCart} className="border border-text-dark/40 w-full text-text-dark px-2 py-3 text-[9px] md:text-[10px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-text-dark hover:border-text-dark hover:text-bg-light transition-all duration-300 rounded-sm mt-auto">
           {product.stock === 0 ? `Encargar por ${product.price} (Con Demora)` : `Agregar por ${product.price}`}
         </button>
@@ -199,6 +245,7 @@ function ProductCard({ product, index, globalScents, openLightbox }: { product: 
 export default function ProductList() {
   const [candles, setCandles] = useState<Candle[]>([]);
   const [globalScents, setGlobalScents] = useState<string[]>([]);
+  const [globalLids, setGlobalLids] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<LightboxState>(null);
 
@@ -209,8 +256,14 @@ export default function ProductList() {
       })
       .catch(console.error);
 
+    sanityClient.fetch(`*[_type == "lid"] | order(name asc) { name }`)
+      .then((data) => {
+        setGlobalLids(data.map((l: any) => l.name));
+      })
+      .catch(console.error);
+
     sanityClient.fetch(`*[_type == "candle"] | order(_createdAt asc) {
-        _id, name, creator, price, priceNumber, stock, description, images
+        _id, name, creator, price, priceNumber, stock, description, hasLids, images
       }`).then((data) => {
       setCandles(data);
       setLoading(false);
@@ -270,7 +323,7 @@ export default function ProductList() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-8">
               {candles.map((candle, index) => (
-                <ProductCard key={candle._id} product={candle} index={index} globalScents={globalScents} openLightbox={setLightbox} />
+                <ProductCard key={candle._id} product={candle} index={index} globalScents={globalScents} globalLids={globalLids} openLightbox={setLightbox} />
               ))}
             </div>
           )}

@@ -53,7 +53,7 @@ export default function Cart() {
     msg += `*Pago:* ${paymentMethod === 'TRANSFERENCIA' ? '🏦 Transferencia Bancaria' : '💵 Efectivo'}\n\n`;
     msg += `*MI CARRITO:*\n`;
     items.forEach(item => {
-      msg += `- ${item.quantity}x ${item.name} ${item.scent ? `(Aroma: ${item.scent}) ` : ''}- ${formatPrice(item.price * item.quantity)}\n`;
+      msg += `- ${item.quantity}x ${item.name} ${item.scent ? `(Aroma: ${item.scent}) ` : ''}${item.lid ? `[Tapa: ${item.lid}] ` : ''}- ${formatPrice(item.price * item.quantity)}\n`;
     });
     msg += `\n*Subtotal:* ${formatPrice(subtotal)}\n`;
     msg += `*Envío:* ${deliveryMethod === 'PICKUP' ? 'Bonificado' : (isFreeShipping ? 'Bonificado' : formatPrice(shippingCost))}\n`;
@@ -94,7 +94,7 @@ export default function Cart() {
         items: items.map(i => ({
           id: i.id, // ID físico real en BD
           quantity: i.quantity,
-          name: i.scent ? `${i.name} (${i.scent})` : i.name, // Empaquetar el aroma
+          name: `${i.name}${i.scent ? ` (${i.scent})` : ''}${i.lid ? ` [Tapa: ${i.lid}]` : ''}`, 
           image: null
         })),
         customer: { name, phone },
@@ -202,10 +202,15 @@ export default function Cart() {
                       <div className="flex-1 flex flex-col h-full justify-between py-1">
                         <div>
                           <h3 className="text-xs md:text-sm font-heading font-medium tracking-widest uppercase mb-1">{item.name}</h3>
-                          {item.scent && (
-                            <p className="text-[9.5px] font-sans tracking-widest text-text-dark/60 mb-2 uppercase border border-text-dark/20 inline-block px-1.5 py-0.5 rounded-sm bg-text-dark/5">{item.scent}</p>
-                          )}
-                          <p className={`text-[10px] md:text-[11px] font-sans tracking-widest mb-0 ${item.scent ? 'text-text-dark/80' : 'text-text-dark/60'}`}>{formatPrice(item.price)}</p>
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {item.scent && (
+                              <p className="text-[9px] font-sans tracking-widest text-text-dark/60 uppercase border border-text-dark/20 px-1.5 py-0.5 rounded-sm bg-text-dark/5">{item.scent}</p>
+                            )}
+                            {item.lid && (
+                              <p className="text-[9px] font-sans tracking-widest text-text-dark/60 uppercase border border-text-dark/20 px-1.5 py-0.5 rounded-sm bg-text-dark/5">{item.lid}</p>
+                            )}
+                          </div>
+                          <p className={`text-[10px] md:text-[11px] font-sans tracking-widest mb-0 ${item.scent || item.lid ? 'text-text-dark/80 mt-1' : 'text-text-dark/60'}`}>{formatPrice(item.price)}</p>
 
                           {item.stock === 0 && (
                             <div className="mt-2 mb-4">
