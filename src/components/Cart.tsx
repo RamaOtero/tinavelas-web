@@ -12,7 +12,7 @@ export default function Cart() {
   
   // Checkout Form State
   const [deliveryMethod, setDeliveryMethod] = useState<'SHIPPING' | 'PICKUP'>('SHIPPING');
-  const [paymentMethod, setPaymentMethod] = useState<'TRANSFERENCIA' | 'EFECTIVO'>('TRANSFERENCIA');
+  const [paymentMethod, setPaymentMethod] = useState<'TRANSFERENCIA' | 'EFECTIVO' | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
@@ -196,7 +196,7 @@ export default function Cart() {
                           )}
                           <p className={`text-[10px] md:text-[11px] font-sans tracking-widest mb-0 ${item.scent ? 'text-text-dark/80' : 'text-text-dark/60'}`}>{formatPrice(item.price)}</p>
                           
-                          <div className="mt-2">
+                          <div className="mt-2 mb-4">
                             {item.stock === 0 ? (
                               <span className="inline-block border border-accent-2/60 bg-accent-2/10 text-accent-2 text-[8px] md:text-[9px] tracking-widest uppercase px-2 py-1 rounded-sm">Envase a pedido (Demora Mayor)</span>
                             ) : (
@@ -358,7 +358,7 @@ export default function Cart() {
                 ) : (
                   <button 
                     onClick={handleCheckout} 
-                    disabled={!name || !phone || (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) || processing}
+                    disabled={!name || !phone || (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) || !paymentMethod || processing}
                     className={`w-full bg-[#25D366] text-white py-4 md:py-5 text-[10px] md:text-[11px] font-sans font-medium hover:brightness-110 disabled:opacity-50 transition-all duration-300 uppercase tracking-[0.25em] rounded-sm flex items-center justify-center space-x-2`}
                   >
                     {processing ? <Loader2 className="animate-spin" size={16} /> : null}
