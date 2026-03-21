@@ -12,7 +12,6 @@ export interface Candle {
   price: string;
   priceNumber: number;
   stock: number;
-  stock: number;
   description: string;
   hasLids?: boolean;
   images: any[];
