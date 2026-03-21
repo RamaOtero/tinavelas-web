@@ -334,6 +334,11 @@ export default function Cart() {
             {/* Footer Actions */}
             {items.length > 0 && (
               <div className="p-6 md:p-8 border-t border-accent-2/20 bg-bg-light shrink-0">
+                <div className="mb-6 pb-6 border-b border-text-dark/10">
+                  <p className="text-[8.5px] md:text-[9.5px] font-sans text-text-dark/60 text-center italic leading-relaxed px-2">
+                    * El arte toma tiempo. Por favor, contempla 24hs de elaboración y reposo (curado de la cera) desde el momento de encargo para que tu pieza llegue perfecta.
+                  </p>
+                </div>
                 {view === 'CHECKOUT' && (
                   <div className="mb-4 pb-4 border-b border-text-dark/10 space-y-2">
                     <div className="flex justify-between items-center text-xs font-sans text-text-dark/70">
