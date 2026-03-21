@@ -9,15 +9,15 @@ import { toast } from 'react-hot-toast';
 export default function Cart() {
   const { items, removeItem, updateQuantity, toggleCart, isCartOpen, clearCart } = useCartStore();
   const [view, setView] = useState<'CART' | 'CHECKOUT'>('CART');
-  
+
   // Checkout Form State
   const [deliveryMethod, setDeliveryMethod] = useState<'SHIPPING' | 'PICKUP'>('SHIPPING');
   const [paymentMethod, setPaymentMethod] = useState<'TRANSFERENCIA' | 'EFECTIVO' | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
-  const [coordinates, setCoordinates] = useState<{lat: number, lng: number} | null>(null);
-  
+  const [coordinates, setCoordinates] = useState<{ lat: number, lng: number } | null>(null);
+
   // Logistics Settings from Sanity
   const [shippingCost, setShippingCost] = useState(0);
   const [freeThreshold, setFreeThreshold] = useState(50000);
@@ -26,12 +26,12 @@ export default function Cart() {
   useEffect(() => {
     if (isCartOpen) {
       sanityClient.fetch(`*[_type == "siteSettings"][0]{ shippingCostLaPlata, freeShippingThreshold }`)
-      .then(data => {
-        if(data) {
-           setShippingCost(data.shippingCostLaPlata || 0);
-           setFreeThreshold(data.freeShippingThreshold || 0);
-        }
-      }).catch(console.error);
+        .then(data => {
+          if (data) {
+            setShippingCost(data.shippingCostLaPlata || 0);
+            setFreeThreshold(data.freeShippingThreshold || 0);
+          }
+        }).catch(console.error);
     }
   }, [isCartOpen]);
 
@@ -45,7 +45,7 @@ export default function Cart() {
   };
 
   const handleWhatsappCheckout = () => {
-    let msg = `*NUEVO PEDIDO - TINA VELAS* 🕯️\n\n`;
+    let msg = `*NUEVO PEDIDO - TINA VELAS* ✨\n\n`;
     msg += `*Cliente:* ${name}\n`;
     msg += `*WhatsApp:* ${phone}\n`;
     msg += `*Entrega:* ${deliveryMethod === 'PICKUP' ? '📦 Retiro en Punto a coordinar' : `📍 Envío a ${address}`}\n`;
@@ -67,37 +67,37 @@ export default function Cart() {
     } else {
       msg += `¡Hola! Confirmo este pedido. Abonaré con efectivo exacto al momento de ${deliveryMethod === 'PICKUP' ? 'retirar' : 'recibir'} el paquete.`;
     }
-    
+
     const encodedMsg = encodeURIComponent(msg);
-    // Número base extraído del Floating Widget configurado.
-    window.open(`https://wa.me/5492216031496?text=${encodedMsg}`, '_blank');
+    // Cambiamos de wa.me a api.whatsapp.com para evitar corrupción de emojis en el redirect
+    window.open(`https://api.whatsapp.com/send?phone=5492216031496&text=${encodedMsg}`, '_blank');
     clearCart();
-    toast.success('¡Redirigiendo a WhatsApp!', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em'} });
+    toast.success('¡Redirigiendo a WhatsApp!', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
     toggleCart(false);
   };
 
   const handleCheckout = async () => {
     if (!name || !phone) {
-       toast.error("Por favor completa tu nombre y WhatsApp.");
-       return;
+      toast.error("Por favor completa tu nombre y WhatsApp.");
+      return;
     }
     if (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) {
-       toast.error("Por favor ingresa tu dirección y ubícala en el mapa para el envío.");
-       return;
+      toast.error("Por favor ingresa tu dirección y ubícala en el mapa para el envío.");
+      return;
     }
 
     setProcessing(true);
-    
+
     try {
       const payload = {
-        items: items.map(i => ({ 
+        items: items.map(i => ({
           id: i.id, // ID físico real en BD
-          quantity: i.quantity, 
+          quantity: i.quantity,
           name: i.scent ? `${i.name} (${i.scent})` : i.name, // Empaquetar el aroma
-          image: null 
+          image: null
         })),
         customer: { name, phone },
-        delivery: deliveryMethod === 'SHIPPING' 
+        delivery: deliveryMethod === 'SHIPPING'
           ? { address, lat: coordinates?.lat, lng: coordinates?.lng }
           : { address: 'A coordinar retiro por WhatsApp', lat: null, lng: null },
         isFreeShipping: deliveryMethod === 'PICKUP' ? true : isFreeShipping,
@@ -190,7 +190,7 @@ export default function Cart() {
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="flex-1 flex flex-col h-full justify-between py-1">
                         <div>
                           <h3 className="text-xs md:text-sm font-heading font-medium tracking-widest uppercase mb-1">{item.name}</h3>
@@ -198,24 +198,24 @@ export default function Cart() {
                             <p className="text-[9.5px] font-sans tracking-widest text-text-dark/60 mb-2 uppercase border border-text-dark/20 inline-block px-1.5 py-0.5 rounded-sm bg-text-dark/5">{item.scent}</p>
                           )}
                           <p className={`text-[10px] md:text-[11px] font-sans tracking-widest mb-0 ${item.scent ? 'text-text-dark/80' : 'text-text-dark/60'}`}>{formatPrice(item.price)}</p>
-                          
+
                           {item.stock === 0 && (
                             <div className="mt-2 mb-4">
                               <span className="inline-block border border-accent-2/60 bg-accent-2/10 text-accent-2 text-[8px] md:text-[9px] tracking-widest uppercase px-2 py-1 rounded-sm">Con Demora</span>
                             </div>
                           )}
                         </div>
-                        
+
                         <div className="flex items-center justify-between mt-auto">
                           <div className="flex items-center border border-accent-2/40 rounded-sm relative">
-                            <button 
+                            <button
                               onClick={() => updateQuantity(item.cartItemId || item.id, Math.max(1, item.quantity - 1))}
                               className="p-1.5 md:p-2 hover:bg-accent-2/10 transition-colors"
                             >
                               <Minus size={12} strokeWidth={1.5} />
                             </button>
                             <span className="text-[10px] md:text-[11px] font-sans px-3 min-w-[24px] text-center font-medium">{item.quantity}</span>
-                            <button 
+                            <button
                               onClick={() => {
                                 if (item.stock === 0 || item.quantity < item.stock) {
                                   updateQuantity(item.cartItemId || item.id, item.quantity + 1);
@@ -239,11 +239,11 @@ export default function Cart() {
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="space-y-4">
                     <h3 className="text-xs font-sans tracking-widest uppercase text-text-dark/60 mb-2">1. Mis Datos</h3>
-                    <input 
+                    <input
                       type="text" placeholder="Nombre completo" value={name} onChange={e => setName(e.target.value)}
                       className="w-full bg-transparent border-b border-text-dark/20 py-2 text-sm font-sans focus:outline-none focus:border-text-dark transition-colors placeholder:text-text-dark/30"
                     />
-                    <input 
+                    <input
                       type="text" placeholder="WhatsApp (Ej: 221...)" value={phone} onChange={e => setPhone(e.target.value)}
                       className="w-full bg-transparent border-b border-text-dark/20 py-2 text-sm font-sans focus:outline-none focus:border-text-dark transition-colors placeholder:text-text-dark/30"
                     />
@@ -252,13 +252,13 @@ export default function Cart() {
                   <div className="space-y-4">
                     <h3 className="text-xs font-sans tracking-widest uppercase text-text-dark/60 mb-2 mt-4">2. Método de Entrega</h3>
                     <div className="flex gap-4">
-                      <button 
+                      <button
                         onClick={() => setDeliveryMethod('SHIPPING')}
                         className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors ${deliveryMethod === 'SHIPPING' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
                       >
                         Envío a Domicilio
                       </button>
-                      <button 
+                      <button
                         onClick={() => setDeliveryMethod('PICKUP')}
                         className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors ${deliveryMethod === 'PICKUP' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
                       >
@@ -272,11 +272,11 @@ export default function Cart() {
                           <h3 className="text-xs font-sans tracking-widest uppercase text-text-dark/60">3. Datos de Envío</h3>
                           <MapPin size={16} className="text-accent-2" strokeWidth={1.5} />
                         </div>
-                        <input 
+                        <input
                           type="text" placeholder="Dirección escrita (Calle, número, depto)" value={address} onChange={e => setAddress(e.target.value)}
                           className="w-full bg-transparent border-b border-text-dark/20 py-2 text-sm font-sans focus:outline-none focus:border-text-dark transition-colors placeholder:text-text-dark/30"
                         />
-                        
+
                         <div className="pt-2">
                           <p className="text-[10px] font-sans tracking-wide text-text-dark/60 mb-3 leading-relaxed">
                             Mueve el mapa y haz click sobre tu casa para marcar el punto exacto al que debe llegar el repartidor.
@@ -299,7 +299,7 @@ export default function Cart() {
                   <div className="space-y-4">
                     <h3 className="text-xs font-sans tracking-widest uppercase text-text-dark/60 mb-2 mt-8">4. Método de Pago</h3>
                     <div className="flex gap-4">
-                      <button 
+                      <button
                         onClick={() => {
                           setPaymentMethod('TRANSFERENCIA');
                           setTimeout(() => {
@@ -310,7 +310,7 @@ export default function Cart() {
                       >
                         Transferencia
                       </button>
-                      <button 
+                      <button
                         onClick={() => setPaymentMethod('EFECTIVO')}
                         className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors flex items-center justify-center gap-2 ${paymentMethod === 'EFECTIVO' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
                       >
@@ -354,21 +354,21 @@ export default function Cart() {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="flex justify-between items-end mb-6">
                   <span className="text-[10px] md:text-xs font-sans tracking-widest uppercase text-text-dark/60">
                     {view === 'CART' ? 'Subtotal' : 'Total a Pagar'}
                   </span>
                   <span className="text-xl md:text-2xl font-heading tracking-wider">{view === 'CART' ? formatPrice(subtotal) : formatPrice(total)}</span>
                 </div>
-                
+
                 {view === 'CART' ? (
                   <button onClick={() => setView('CHECKOUT')} className="w-full bg-text-dark text-bg-light py-4 md:py-5 text-[10px] md:text-[11px] font-sans font-medium hover:bg-accent-2 transition-all duration-300 uppercase tracking-[0.25em] rounded-sm">
                     Continuar al Envío
                   </button>
                 ) : (
-                  <button 
-                    onClick={handleCheckout} 
+                  <button
+                    onClick={handleCheckout}
                     disabled={!name || !phone || (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) || !paymentMethod || processing}
                     className={`w-full bg-[#25D366] text-white py-4 md:py-5 text-[10px] md:text-[11px] font-sans font-medium hover:brightness-110 disabled:opacity-50 transition-all duration-300 uppercase tracking-[0.25em] rounded-sm flex items-center justify-center space-x-2`}
                   >
