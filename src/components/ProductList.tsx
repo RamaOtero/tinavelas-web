@@ -205,17 +205,9 @@ export default function ProductList() {
   const [lightbox, setLightbox] = useState<LightboxState>(null);
 
   useEffect(() => {
-    sanityClient.fetch(`*[_type == "candle"]{
-      _id,
-      name,
-      creator,
-      price,
-      priceNumber,
-      stock,
-      description,
-      allowedScents,
-      images
-    }`).then((data) => {
+    sanityClient.fetch(`*[_type == "candle"] | order(_createdAt asc) {
+        _id, name, creator, price, priceNumber, stock, description, images, "allowedScents": allowedScents[]->name
+      }`).then((data) => {
       setCandles(data);
       setLoading(false);
     }).catch((err) => {
