@@ -53,7 +53,7 @@ export default function Cart() {
     msg += `*Pago:* ${paymentMethod === 'TRANSFERENCIA' ? '🏦 Transferencia Bancaria' : '💵 Efectivo'}\n\n`;
     msg += `*MI CARRITO:*\n`;
     items.forEach(item => {
-      msg += `- ${item.quantity}x ${item.name} ${item.scent ? `(Aroma: ${item.scent}) ` : ''}${item.lid ? `[Tapa: ${item.lid}] ` : ''}- ${formatPrice(item.price * item.quantity)}\n`;
+      msg += `- ${item.quantity}x ${item.name} ${item.scent ? `(Aroma: ${item.scent}) ` : ''}${item.lid ? `[Tapa: ${item.lid}] ` : ''}${item.hasLabel !== undefined ? (item.hasLabel ? '[C/ Etiqueta] ' : '[Sin Etiqueta] ') : ''}- ${formatPrice(item.price * item.quantity)}\n`;
     });
     msg += `\n*Subtotal:* ${formatPrice(subtotal)}\n`;
     msg += `*Envío:* ${deliveryMethod === 'PICKUP' ? 'Bonificado' : (isFreeShipping ? 'Bonificado' : formatPrice(shippingCost))}\n`;
@@ -94,7 +94,7 @@ export default function Cart() {
         items: items.map(i => ({
           id: i.id, // ID físico real en BD
           quantity: i.quantity,
-          name: `${i.name}${i.scent ? ` (${i.scent})` : ''}${i.lid ? ` [Tapa: ${i.lid}]` : ''}`, 
+          name: `${i.name}${i.scent ? ` (${i.scent})` : ''}${i.lid ? ` [Tapa: ${i.lid}]` : ''}${i.hasLabel !== undefined ? (i.hasLabel ? ' [Con Etiqueta]' : ' [Sin Etiqueta]') : ''}`, 
           image: null
         })),
         customer: { name, phone },
@@ -209,8 +209,13 @@ export default function Cart() {
                             {item.lid && (
                               <p className="text-[9px] font-sans tracking-widest text-text-dark/60 uppercase border border-text-dark/20 px-1.5 py-0.5 rounded-sm bg-text-dark/5">{item.lid}</p>
                             )}
+                            {item.hasLabel !== undefined && (
+                              <p className={`text-[9px] font-sans tracking-widest uppercase border px-1.5 py-0.5 rounded-sm ${item.hasLabel ? 'border-accent-2/40 text-accent-2 bg-accent-2/10' : 'border-text-dark/20 text-text-dark/60 bg-text-dark/5'}`}>
+                                {item.hasLabel ? 'CON ETIQUETA' : 'SIN ETIQUETA'}
+                              </p>
+                            )}
                           </div>
-                          <p className={`text-[10px] md:text-[11px] font-sans tracking-widest mb-0 ${item.scent || item.lid ? 'text-text-dark/80 mt-1' : 'text-text-dark/60'}`}>{formatPrice(item.price)}</p>
+                          <p className={`text-[10px] md:text-[11px] font-sans tracking-widest mb-0 ${item.scent || item.lid || item.hasLabel !== undefined ? 'text-text-dark/80 mt-1' : 'text-text-dark/60'}`}>{formatPrice(item.price)}</p>
 
                           {item.stock === 0 && (
                             <div className="mt-2 mb-4">

@@ -10,6 +10,7 @@ export interface CartItem {
   stock: number;
   scent?: string;
   lid?: string;
+  hasLabel?: boolean;
   image?: any;
 }
 
@@ -32,10 +33,11 @@ export const useCartStore = create<CartState>()(
 
       addItem: (newItem) => {
         const { items } = get();
-        // ID combinando vela física real + aroma virtual + tapa virtual
+        // ID combinando vela física real + aroma virtual + tapa virtual + etiqueta
         const scentStr = newItem.scent ? `-${newItem.scent}` : '';
         const lidStr = newItem.lid ? `-${newItem.lid}` : '';
-        const cartItemId = `${newItem.id}${scentStr}${lidStr}`;
+        const labelStr = newItem.hasLabel !== undefined ? (newItem.hasLabel ? '-L' : '-NL') : '';
+        const cartItemId = `${newItem.id}${scentStr}${lidStr}${labelStr}`;
         const completeItem = { ...newItem, cartItemId };
 
         const existingItem = items.find((i) => i.cartItemId === cartItemId);

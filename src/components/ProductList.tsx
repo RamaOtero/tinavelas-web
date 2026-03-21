@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ChevronDown, X, Loader2, Flame } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, X, Loader2, Flame, Check } from 'lucide-react';
 import { sanityClient, urlFor } from '../sanity';
 import { useCartStore } from '../store/useCartStore';
 import { toast } from 'react-hot-toast';
@@ -14,6 +14,7 @@ export interface Candle {
   stock: number;
   description: string;
   hasLids?: boolean;
+  hasLabelSelector?: boolean;
   images: any[];
 }
 
@@ -32,6 +33,8 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
   const [selectedLid, setSelectedLid] = useState<string>('');
   const [isLidDropdownOpen, setIsLidDropdownOpen] = useState(false);
   const lidDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [withLabel, setWithLabel] = useState(true);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -99,6 +102,7 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
       stock: product.stock !== undefined ? product.stock : 10,
       scent: selectedScent || undefined, // Adjuntamos la esencia a Zustand
       lid: (product.hasLids && selectedLid) ? selectedLid : undefined, // Adjuntamos la tapa
+      hasLabel: product.hasLabelSelector ? withLabel : undefined,
       image: hasImages ? images[0] : null,
     });
   };
@@ -233,6 +237,28 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
           </div>
         )}
 
+        {product.hasLabelSelector && (
+          <div className="w-full mb-5 relative flex items-center justify-between border-b border-text-dark/20 pb-3">
+            <div className="flex flex-col text-left">
+              <span className="text-[9px] md:text-[10px] font-sans tracking-[0.2em] text-text-dark uppercase">Etiqueta Frontal</span>
+              <span className="text-[7.5px] font-sans tracking-widest text-text-dark/50 uppercase mt-1">Con o sin envoltorio gráfico</span>
+            </div>
+            <button 
+              onClick={() => setWithLabel(!withLabel)} 
+              className={`w-5 h-5 md:w-6 md:h-6 rounded-sm border transition-all duration-300 flex items-center justify-center shrink-0 ${withLabel ? 'bg-accent-2 border-accent-2 text-bg-light' : 'bg-transparent border-text-dark/40 hover:border-text-dark/60'}`}
+              aria-label={withLabel ? 'Desmarcar etiqueta' : 'Marcar etiqueta'}
+            >
+              <AnimatePresence>
+                {withLabel && (
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+                    <Check size={14} strokeWidth={3} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </button>
+          </div>
+        )}
+
         <button onClick={handleAddToCart} className="border border-text-dark/40 w-full text-text-dark px-2 py-3 text-[9px] md:text-[10px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-text-dark hover:border-text-dark hover:text-bg-light transition-all duration-300 rounded-sm mt-auto">
           {product.stock === 0 ? `Encargar por ${product.price} (Con Demora)` : `Agregar por ${product.price}`}
         </button>
@@ -262,7 +288,7 @@ export default function ProductList() {
       .catch(console.error);
 
     sanityClient.fetch(`*[_type == "candle"] | order(_createdAt asc) {
-        _id, name, creator, price, priceNumber, stock, description, hasLids, images
+        _id, name, creator, price, priceNumber, stock, description, hasLids, hasLabelSelector, images
       }`).then((data) => {
       setCandles(data);
       setLoading(false);
