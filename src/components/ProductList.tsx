@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ChevronDown, X, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, X, Loader2, Flame } from 'lucide-react';
 import { sanityClient, urlFor } from '../sanity';
 import { useCartStore } from '../store/useCartStore';
 import { toast } from 'react-hot-toast';
@@ -129,7 +129,10 @@ function ProductCard({ product, index, globalScents, openLightbox }: { product: 
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s] ease-[0.25,0.46,0.45,0.94]"
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-200 text-gray-500">No Image</div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-accent-1/5">
+              <Flame size={40} strokeWidth={1} className="text-text-dark/20 mb-3" />
+              <span className="text-[10px] uppercase tracking-widest text-text-dark/30">Tina Velas</span>
+            </div>
           )}
         </AnimatePresence>
 

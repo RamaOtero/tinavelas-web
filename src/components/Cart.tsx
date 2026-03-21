@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Minus, Trash2, ShoppingBag, MapPin, ArrowLeft, Loader2 } from 'lucide-react';
+import { X, Plus, Minus, Trash2, ShoppingBag, MapPin, ArrowLeft, Loader2, Flame } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { urlFor, sanityClient } from '../sanity';
 import CheckoutMap from './CheckoutMap';
@@ -181,10 +181,13 @@ export default function Cart() {
                   items.map((item) => (
                     <div key={item.cartItemId || item.id} className="flex gap-6 items-center">
                       <div className="w-20 h-28 md:w-24 md:h-32 bg-accent-1/10 rounded-sm shrink-0 overflow-hidden relative">
-                        {item.image ? (
+                        {item.image && item.image.asset ? (
                           <img src={urlFor(item.image).width(200).url()} alt={item.name} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="absolute inset-0 flex items-center justify-center text-[8px] uppercase tracking-widest text-text-dark/30">Sin Foto</div>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-accent-1/5">
+                            <Flame size={20} strokeWidth={1} className="text-text-dark/20 mb-2" />
+                            <span className="text-[8px] uppercase tracking-widest text-text-dark/30">Tina Velas</span>
+                          </div>
                         )}
                       </div>
                       

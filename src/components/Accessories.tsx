@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { sanityClient, urlFor } from '../sanity';
 import { useCartStore } from '../store/useCartStore';
+import { Flame } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 interface Accessory {
@@ -72,7 +73,10 @@ export default function Accessories() {
                 {item.image && item.image.asset ? (
                   <img src={urlFor(item.image).url() || undefined} alt={item.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] ease-out" loading="lazy" />
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center text-text-dark/30 text-[9px] uppercase tracking-widest font-sans bg-accent-1/10">Sin Foto</div>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-accent-1/10">
+                    <Flame size={32} strokeWidth={1} className="text-text-dark/20 mb-2" />
+                    <span className="text-[9px] uppercase tracking-widest text-text-dark/30">Tina Velas</span>
+                  </div>
                 )}
               </div>
               <h3 className="text-xs md:text-sm lg:text-base font-heading text-text-dark tracking-widest uppercase mb-2">{item.name}</h3>
