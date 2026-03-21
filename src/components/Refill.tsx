@@ -1,7 +1,26 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Recycle } from 'lucide-react';
+import { sanityClient } from '../sanity';
 
 export default function Refill() {
+  const [refillGrams, setRefillGrams] = useState<number | null>(null);
+  const [refillPrice, setRefillPrice] = useState<number | null>(null);
+
+  useEffect(() => {
+    sanityClient.fetch(`*[_type == "siteSettings"][0]{ refillGrams, refillPrice }`)
+      .then(data => {
+        if (data) {
+          setRefillGrams(data.refillGrams);
+          setRefillPrice(data.refillPrice);
+        }
+      }).catch(console.error);
+  }, []);
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }).format(price);
+  };
+
   const handleWhatsApp = () => {
     const text = '¡Hola! Quisiera consultar los precios y aromas disponibles para hacer el refill de mi envase.';
     window.open(`https://wa.me/5492216031496?text=${encodeURIComponent(text)}`, '_blank');
@@ -26,15 +45,23 @@ export default function Refill() {
             Servicio de <span className="italic font-light text-accent-2">Refill</span>
           </h2>
 
-          <p className="text-sm md:text-base font-sans font-light text-bg-light/70 mb-12 max-w-2xl leading-relaxed mx-auto">
+          <p className="text-sm md:text-base font-sans font-light text-bg-light/70 mb-10 max-w-2xl leading-relaxed mx-auto">
             Creemos en la sostenibilidad sin perder la elegancia. Una vez que tu vela se haya consumido, no descartes su envase. Límpialo y acércalo a nuestro taller: lo rellenaremos artesanalmente con la fragancia que elijas, dándole una segunda vida a tu pieza escultórica por un precio menor.
           </p>
+
+          {refillGrams !== null && refillPrice !== null && (
+            <div className="mb-8 border border-accent-2/20 bg-accent-2/5 px-6 py-4 rounded-sm fade-in animate-in duration-700">
+              <p className="text-[11px] md:text-xs font-sans tracking-[0.25em] uppercase text-accent-1">
+                Aprox. {refillGrams} gramos — <span className="font-semibold">{formatPrice(refillPrice)}</span>
+              </p>
+            </div>
+          )}
 
           <button
             onClick={handleWhatsApp}
             className="border border-accent-2 text-accent-2 px-10 py-4 text-[9px] md:text-[10px] font-sans tracking-[0.25em] font-medium uppercase hover:bg-accent-2 hover:text-text-dark transition-all duration-500 rounded-sm"
           >
-            Consultar precios de Refill
+            Consultar sobre envases específicos
           </button>
         </motion.div>
 
