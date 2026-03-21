@@ -59,7 +59,11 @@ export default function Cart() {
     msg += `*TOTAL A ABONAR: ${formatPrice(total)}*\n\n`;
 
     if (paymentMethod === 'TRANSFERENCIA') {
-      msg += `¡Hola! Confirmo este pedido. A continuación adjuntaré el comprobante de transferencia bancaria por ${formatPrice(total)}.`;
+      msg += `¡Hola! Confirmo este pedido. A continuación adjuntaré el comprobante de transferencia bancaria por ${formatPrice(total)}.\n\n`;
+      msg += `*Mis datos para transferir (Recordatorio):*\n`;
+      msg += `- Titular: Maria Eugenia Pittatore\n`;
+      msg += `- CVU: 0000003100037262012759\n`;
+      msg += `- Alias: Tinavelasartesanales`;
     } else {
       msg += `¡Hola! Confirmo este pedido. Abonaré con efectivo exacto al momento de ${deliveryMethod === 'PICKUP' ? 'retirar' : 'recibir'} el paquete.`;
     }
@@ -82,25 +86,22 @@ export default function Cart() {
        return;
     }
 
-    // MercadoPago removido temporalmente por decisión de negocio.
-    // Todos los cobros se delegan de forma segura 100% a WhatsApp.
-    handleWhatsappCheckout();
-    return;
+    setProcessing(true);
     
     try {
       const payload = {
-        // Enviar datos encriptados hacia nuestro blindaje en Vercel
         items: items.map(i => ({ 
           id: i.id, // ID físico real en BD
           quantity: i.quantity, 
-          name: i.scent ? `${i.name} (${i.scent})` : i.name, // Empaquetar el aroma para que MP genere el recibo completo.
-          image: i.image && i.image.asset ? urlFor(i.image).url() : null 
+          name: i.scent ? `${i.name} (${i.scent})` : i.name, // Empaquetar el aroma
+          image: null 
         })),
         customer: { name, phone },
         delivery: deliveryMethod === 'SHIPPING' 
           ? { address, lat: coordinates?.lat, lng: coordinates?.lng }
           : { address: 'A coordinar retiro por WhatsApp', lat: null, lng: null },
-        isFreeShipping: deliveryMethod === 'PICKUP' ? true : isFreeShipping
+        isFreeShipping: deliveryMethod === 'PICKUP' ? true : isFreeShipping,
+        paymentMethod: paymentMethod
       };
 
       const response = await fetch('/api/checkout', {
@@ -110,21 +111,16 @@ export default function Cart() {
       });
 
       if (!response.ok) {
-        throw new Error('Error al conectar con el servidor bancario.');
+        const data = await response.json();
+        throw new Error(data.error || 'Error conectando con la base de datos.');
       }
 
-      const data = await response.json();
-      
-      if (data.init_point) {
-        // Redirigir al cliente a la bóveda encriptada de Mercado Pago
-        window.location.href = data.init_point; 
-      } else {
-         throw new Error('No se pudo generar el enlace de pago seguro');
-      }
+      // Base de datos oficial grabada con éxito.
+      handleWhatsappCheckout();
 
     } catch (error: any) {
       console.error(error);
-      toast.error('Hubo un problema procesando la orden: ' + error.message);
+      toast.error('Problema procesando la orden de compra en el servidor: ' + error.message);
       setProcessing(false);
     }
   };
