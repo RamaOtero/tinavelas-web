@@ -198,7 +198,7 @@ function ProductCard({ product, index, globalScents, openLightbox }: { product: 
           <span className="absolute top-4 left-4 z-10 bg-text-dark text-bg-light px-3 py-1 text-[8px] font-sans tracking-[0.2em] font-medium uppercase rounded-sm shadow-sm opacity-90 backdrop-blur-sm">Sin Envase Físico</span>
         )}
         <button onClick={handleAddToCart} className="border border-text-dark/40 w-full text-text-dark px-2 py-3 text-[9px] md:text-[10px] font-sans tracking-[0.2em] font-medium uppercase hover:bg-text-dark hover:border-text-dark hover:text-bg-light transition-all duration-300 rounded-sm mt-auto">
-          {product.stock === 0 ? `Encargar por ${product.price} (Envase a Pedido)` : `Agregar ${product.price} (Armado 24hs)`}
+          {product.stock === 0 ? `Encargar por ${product.price} (Con Demora)` : `Agregar por ${product.price}`}
         </button>
       </div>
     </motion.div>
