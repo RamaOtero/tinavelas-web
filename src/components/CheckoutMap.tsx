@@ -52,16 +52,16 @@ export default function CheckoutMap({ onLocationSelect }: MapProps) {
   // Limitar el mapa exclusivamente al "Casco Urbano" (Cuadrado de La Plata)
   // Limitar el mapa exclusivamente al "Casco Urbano" (Cuadrado de La Plata)
   const cascoUrbanoBounds: L.LatLngBoundsExpression = [
-    [-34.950, -58.000], // Sudoeste (margen exterior general)
-    [-34.890, -57.915]  // Noreste (margen exterior general)
+    [-34.955, -58.005], // Sudoeste (margen exterior general)
+    [-34.885, -57.910]  // Noreste (margen exterior general)
   ];
 
-  // Hueco transparente (El cuadrado romboidal de misiones diagonales: 32 a 72, 31 a 122)
+  // Hueco transparente de la Circunvalación (Dirección Anti-horaria para crear el hueco real SVG)
   const innerHole: [number, number][] = [
-    [-34.8943, -57.9515], // Norte (Av. 32 y 122)
-    [-34.9312, -57.9250], // Este (Av. 72 y 122)
-    [-34.9472, -57.9680], // Sur (Av. 72 y 31)
-    [-34.9102, -57.9940]  // Oeste (Av. 32 y 31)
+    [-34.8973, -57.9620], // Norte (Av. 32 y 120)
+    [-34.9080, -57.9902], // Oeste (Av. 32 y 31)
+    [-34.9431, -57.9566], // Sur (Av. 72 y 31)
+    [-34.9351, -57.9242]  // Este (Av. 72 y 120)
   ];
 
   // Máscara gigante para tapar el resto del mundo
