@@ -299,7 +299,12 @@ export default function Cart() {
                     <h3 className="text-xs font-sans tracking-widest uppercase text-text-dark/60 mb-2 mt-8">4. Método de Pago</h3>
                     <div className="flex gap-4">
                       <button 
-                        onClick={() => setPaymentMethod('TRANSFERENCIA')}
+                        onClick={() => {
+                          setPaymentMethod('TRANSFERENCIA');
+                          setTimeout(() => {
+                            document.getElementById('transferDetailBox')?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                          }, 150);
+                        }}
                         className={`flex-1 py-3 text-[9px] md:text-[10px] font-sans tracking-widest uppercase rounded-sm border transition-colors flex items-center justify-center gap-2 ${paymentMethod === 'TRANSFERENCIA' ? 'border-accent-2 bg-accent-2/10 text-accent-2' : 'border-text-dark/20 text-text-dark/60 hover:border-text-dark/40'}`}
                       >
                         Transferencia
@@ -313,7 +318,7 @@ export default function Cart() {
                     </div>
 
                     {paymentMethod === 'TRANSFERENCIA' && (
-                      <div className="animate-in fade-in slide-in-from-top-2 duration-500 mt-4 bg-accent-2/5 border border-accent-2/20 p-4 rounded-sm">
+                      <div id="transferDetailBox" className="animate-in fade-in slide-in-from-top-2 duration-500 mt-4 bg-accent-2/5 border border-accent-2/20 p-4 rounded-sm">
                         <h4 className="text-[10px] md:text-xs font-heading tracking-widest uppercase text-text-dark mb-3">Datos Bancarios</h4>
                         <div className="space-y-2 text-[10px] md:text-[11px] font-sans text-text-dark/80">
                           <p><span className="font-semibold">Titular:</span> Maria Eugenia Pittatore</p>
