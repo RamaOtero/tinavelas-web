@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Minus, Trash2, ShoppingBag, MapPin, ArrowLeft, Loader2, Flame } from 'lucide-react';
+import { X, Plus, Minus, Trash2, ShoppingBag, MapPin, ArrowLeft, Loader2, Flame, ChevronDown } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { urlFor, sanityClient } from '../sanity';
 import CheckoutMap from './CheckoutMap';
@@ -22,6 +22,7 @@ export default function Cart() {
   const [shippingCost, setShippingCost] = useState(0);
   const [freeThreshold, setFreeThreshold] = useState(50000);
   const [processing, setProcessing] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(false);
 
   useEffect(() => {
     if (isCartOpen) {
@@ -155,7 +156,7 @@ export default function Cart() {
             <div className="flex items-center justify-between p-6 md:p-8 border-b border-accent-2/20 shrink-0">
               <div className="flex items-center space-x-4">
                 {view === 'CHECKOUT' && (
-                  <button onClick={() => setView('CART')} className="hover:text-accent-2 transition-colors">
+                  <button onClick={() => { setView('CART'); setIsAtBottom(false); }} className="hover:text-accent-2 transition-colors">
                     <ArrowLeft size={20} strokeWidth={1.5} />
                   </button>
                 )}
@@ -169,7 +170,14 @@ export default function Cart() {
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
+            <div 
+              className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 relative"
+              onScroll={(e) => {
+                const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+                /* Determinamos que tocó fondo si está a menos de 50px de diferencia */
+                setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 50);
+              }}
+            >
               {view === 'CART' ? (
                 // --- CART VIEW ---
                 items.length === 0 ? (
@@ -363,19 +371,28 @@ export default function Cart() {
                 </div>
 
                 {view === 'CART' ? (
-                  <button onClick={() => setView('CHECKOUT')} className="w-full bg-text-dark text-bg-light py-4 md:py-5 text-[10px] md:text-[11px] font-sans font-medium hover:bg-accent-2 transition-all duration-300 uppercase tracking-[0.25em] rounded-sm">
+                  <button onClick={() => { setView('CHECKOUT'); setIsAtBottom(false); }} className="w-full bg-text-dark text-bg-light py-4 md:py-5 text-[10px] md:text-[11px] font-sans font-medium hover:bg-accent-2 transition-all duration-300 uppercase tracking-[0.25em] rounded-sm">
                     Continuar al Envío
                   </button>
-                ) : (
-                  <button
-                    onClick={handleCheckout}
-                    disabled={!name || !phone || (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) || !paymentMethod || processing}
-                    className={`w-full bg-[#25D366] text-white py-4 md:py-5 text-[10px] md:text-[11px] font-sans font-medium hover:brightness-110 disabled:opacity-50 transition-all duration-300 uppercase tracking-[0.25em] rounded-sm flex items-center justify-center space-x-2`}
-                  >
-                    {processing ? <Loader2 className="animate-spin" size={16} /> : null}
-                    <span>Confirmar por WhatsApp</span>
-                  </button>
-                )}
+                ) : (() => {
+                  const isFormIncomplete = !name || !phone || (deliveryMethod === 'SHIPPING' && (!address || !coordinates)) || !paymentMethod;
+                  return (
+                    <button
+                      onClick={handleCheckout}
+                      disabled={isFormIncomplete || processing}
+                      className={`w-full ${isFormIncomplete ? 'bg-accent-1/20 text-text-dark/60 border border-text-dark/10' : 'bg-[#25D366] text-white border border-transparent'} py-4 md:py-5 text-[10px] md:text-[11px] font-sans font-medium transition-all duration-300 uppercase tracking-[0.25em] rounded-sm flex items-center justify-center space-x-2`}
+                    >
+                      {processing && <Loader2 className="animate-spin" size={16} />}
+                      {!processing && isFormIncomplete && !isAtBottom && <ChevronDown size={16} className="animate-bounce mr-1 opacity-80" strokeWidth={2} />}
+                      <span>
+                        {isFormIncomplete 
+                          ? (!isAtBottom ? 'Desliza para Continuar' : 'Faltan Datos Arriba') 
+                          : 'Confirmar por WhatsApp'
+                        }
+                      </span>
+                    </button>
+                  );
+                })()}
               </div>
             )}
           </motion.div>
