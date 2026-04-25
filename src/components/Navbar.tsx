@@ -7,7 +7,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { toggleCart, items } = useCartStore();
-  
+
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function Navbar() {
         {/* Left Links (Desktop) */}
         <div className="hidden md:flex flex-1 items-center space-x-3 md:space-x-4 lg:space-x-10 text-[8.5px] md:text-[9px] lg:text-[10px] tracking-[0.1em] md:tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium whitespace-nowrap overflow-hidden">
           <a href="#shop" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
-            Catálogo
+            Velas
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
           <a href="#aromas" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
@@ -62,7 +62,7 @@ export default function Navbar() {
           <img src="/logo.png" alt="Tina Velas Logo" className="h-16 md:h-12 lg:h-20 w-auto object-contain drop-shadow-sm transition-transform duration-500 pointer-events-auto" />
         </div>
 
-            {/* Right Icons */}
+        {/* Right Icons */}
         <div className="flex-1 flex justify-end items-center space-x-3 md:space-x-4 lg:space-x-6 text-[8.5px] md:text-[9px] lg:text-[10px] tracking-[0.1em] md:tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium whitespace-nowrap overflow-hidden">
           <a href="#nosotros" className="hidden md:inline hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Nosotros

@@ -13,6 +13,7 @@ export interface Spray {
   priceNumber: number;
   stock: number;
   description: string;
+  scents?: string[];
   images: any[];
 }
 
@@ -21,7 +22,7 @@ type LightboxState = {
   index: number;
 } | null;
 
-function SprayCard({ product, index, globalScents, openLightbox }: { product: Spray; index: number; globalScents: string[]; openLightbox: (state: LightboxState) => void }) {
+function SprayCard({ product, index, openLightbox }: { product: Spray; index: number; openLightbox: (state: LightboxState) => void }) {
   const [currentImage, setCurrentImage] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [selectedScent, setSelectedScent] = useState<string>('');
@@ -74,7 +75,9 @@ function SprayCard({ product, index, globalScents, openLightbox }: { product: Sp
       toast.error('Esta pieza requiere precio de panel.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
       return;
     }
-    if (globalScents.length > 0 && !selectedScent) {
+
+    const sprayScents = product.scents || [];
+    if (sprayScents.length > 0 && !selectedScent) {
       toast.error('Por favor selecciona un aroma.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
       return;
     }
@@ -151,9 +154,9 @@ function SprayCard({ product, index, globalScents, openLightbox }: { product: Sp
         <h3 className="text-sm md:text-base font-sans tracking-widest uppercase mb-1">{product.name}</h3>
         <p className="text-[9px] md:text-[10px] text-text-dark/50 font-sans tracking-[0.2em] uppercase mb-4">por {product.creator || 'Línea Textil'}</p>
         <div className="w-8 h-[1px] bg-accent-2/60 mb-4"></div>
-        <p className="text-[11px] font-sans text-text-dark/80 font-light leading-relaxed max-w-xs mb-6 h-12 overflow-hidden">{product.description}</p>
+        <p className="text-[11px] font-sans text-text-dark/80 font-light leading-relaxed max-w-xs mb-6">{product.description}</p>
 
-        {globalScents.length > 0 && (
+        {(product.scents || []).length > 0 && (
           <div className="w-full mb-5 relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -169,7 +172,7 @@ function SprayCard({ product, index, globalScents, openLightbox }: { product: Sp
                   initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}
                   className="absolute left-0 right-0 top-full mt-1 bg-bg-light border border-accent-2/30 shadow-xl z-20 py-1 rounded-sm overflow-hidden"
                 >
-                  {globalScents.map(scent => (
+                  {(product.scents || []).map(scent => (
                     <button
                       key={scent}
                       onClick={() => { setSelectedScent(scent); setIsDropdownOpen(false); }}
@@ -196,19 +199,12 @@ function SprayCard({ product, index, globalScents, openLightbox }: { product: Sp
 
 export default function HomeSpray() {
   const [sprays, setSprays] = useState<Spray[]>([]);
-  const [globalScents, setGlobalScents] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<LightboxState>(null);
 
   useEffect(() => {
-    sanityClient.fetch(`*[_type == "scent"] | order(name asc) { name }`)
-      .then((data) => {
-        setGlobalScents(data.map((s: any) => s.name));
-      })
-      .catch(console.error);
-
     sanityClient.fetch(`*[_type == "spray"] | order(_createdAt asc) {
-        _id, name, creator, price, priceNumber, stock, description, images
+        _id, name, creator, price, priceNumber, stock, description, scents, images
       }`).then((data) => {
       setSprays(data);
       setLoading(false);
@@ -264,7 +260,7 @@ export default function HomeSpray() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-8">
               {sprays.map((spray, index) => (
-                <SprayCard key={spray._id} product={spray} index={index} globalScents={globalScents} openLightbox={setLightbox} />
+                <SprayCard key={spray._id} product={spray} index={index} openLightbox={setLightbox} />
               ))}
             </div>
           )}
