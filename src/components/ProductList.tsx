@@ -242,8 +242,8 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
             <div className="flex flex-col text-left">
               <span className="text-[9px] md:text-[10px] font-sans tracking-[0.2em] text-text-dark uppercase">Etiqueta Frontal</span>
             </div>
-            <button 
-              onClick={() => setWithLabel(!withLabel)} 
+            <button
+              onClick={() => setWithLabel(!withLabel)}
               className={`w-5 h-5 md:w-6 md:h-6 rounded-sm border transition-all duration-300 flex items-center justify-center shrink-0 ${withLabel ? 'bg-accent-2 border-accent-2 text-bg-light' : 'bg-transparent border-text-dark/40 hover:border-text-dark/60'}`}
               aria-label={withLabel ? 'Desmarcar etiqueta' : 'Marcar etiqueta'}
             >
@@ -323,7 +323,7 @@ export default function ProductList() {
           <div className="mb-20 md:mb-24 flex flex-col md:flex-row md:items-end justify-between border-b border-accent-2/30 pb-12">
             <div className="max-w-xl">
               <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} className="text-5xl md:text-6xl lg:text-7xl font-heading tracking-tight mb-4">
-                Catálogo <br /> <span className="italic font-light text-text-dark/70">Esencial</span>
+                Catálogo <br /> <span className="italic font-light text-text-dark/70">Velas</span>
               </motion.h2>
             </div>
             <div className="mt-12 md:mt-0 relative">
