@@ -47,10 +47,10 @@ function App() {
         <Hero />
         <ArtisanalProcess />
         <ProductList />
-        <HomeSpray />
         <Scents />
-        <Accessories />
         <Refill />
+        <Accessories />
+        <HomeSpray />
         <About />
         <Care />
       </main>

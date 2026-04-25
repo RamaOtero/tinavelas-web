@@ -38,7 +38,7 @@ export default function Navbar() {
         </div>
 
         {/* Left Links (Desktop) */}
-        <div className="hidden md:flex flex-1 items-center space-x-3 md:space-x-4 lg:space-x-10 text-[8.5px] md:text-[9px] lg:text-[10px] tracking-[0.1em] md:tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium whitespace-nowrap overflow-hidden">
+        <div className="hidden md:flex flex-1 items-center space-x-3 md:space-x-4 lg:space-x-6 text-[8.5px] md:text-[9px] lg:text-[10px] tracking-[0.1em] md:tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium whitespace-nowrap overflow-hidden">
           <a href="#shop" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Velas
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
@@ -47,12 +47,16 @@ export default function Navbar() {
             Aromas
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
+          <a href="#refill" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
+            Refill
+            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
+          </a>
           <a href="#accesorios" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Accesorios
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
-          <a href="#refill" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
-            Refill
+          <a href="#sprays" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
+            Home Spray
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
         </div>
@@ -97,10 +101,11 @@ export default function Navbar() {
             <button onClick={() => setIsOpen(false)} className="absolute top-8 left-6 hover:text-accent-1">
               <X size={28} strokeWidth={1.5} />
             </button>
-            <a href="#shop" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Catálogo</a>
+            <a href="#shop" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Velas</a>
             <a href="#aromas" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Aromas</a>
-            <a href="#accesorios" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Accesorios</a>
             <a href="#refill" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Refill</a>
+            <a href="#accesorios" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Accesorios</a>
+            <a href="#sprays" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Home Spray</a>
             <a href="#nosotros" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Nosotros</a>
             <a href="#cuidados" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Cuidados</a>
 
