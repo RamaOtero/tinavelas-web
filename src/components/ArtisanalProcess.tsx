@@ -18,7 +18,7 @@ export default function ArtisanalProcess() {
           </div>
 
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-heading tracking-wide mb-6">
-            El Tiempo del <span className="italic font-light text-text-dark/70">Artesano</span>
+            El Tiempo de <span className="italic font-light text-text-dark/70">Creación</span>
           </h2>
 
           <h3 className="text-[10px] md:text-xs tracking-[0.3em] uppercase font-sans mb-10 text-text-dark/60 font-medium">La Alquimia de la Cera de Soja</h3>
@@ -30,7 +30,7 @@ export default function ArtisanalProcess() {
           <p className="text-sm md:text-base font-sans font-light text-text-dark/80 mb-12 max-w-2xl leading-relaxed mx-auto">
             Para que una vela queme pareja, no forme túneles y libere su fragancia en su máximo esplendor, la cera de soja requiere un proceso irremplazable de cristalización. Es por este minucioso proceso orgánico de anclaje de aromas que tu encargo necesita un mínimo de <strong>24 horas de reposo absoluto y curado</strong> antes de viajar a tus manos.
           </p>
-          
+
           <div className="w-[1px] h-16 bg-text-dark/20"></div>
 
         </motion.div>

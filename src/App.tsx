@@ -4,6 +4,7 @@ import Cart from './components/Cart';
 import Hero from './components/Hero';
 import ArtisanalProcess from './components/ArtisanalProcess';
 import ProductList from './components/ProductList';
+import HomeSpray from './components/HomeSpray';
 import Scents from './components/Scents';
 import Accessories from './components/Accessories';
 import Refill from './components/Refill';
@@ -46,6 +47,7 @@ function App() {
         <Hero />
         <ArtisanalProcess />
         <ProductList />
+        <HomeSpray />
         <Scents />
         <Accessories />
         <Refill />
