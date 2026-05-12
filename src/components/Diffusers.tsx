@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ChevronDown, X, Loader2, Flame, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, X, Loader2, Droplets } from 'lucide-react';
 import { sanityClient, urlFor } from '../sanity';
 import { useCartStore } from '../store/useCartStore';
 import { toast } from 'react-hot-toast';
 
-export interface Candle {
+export interface Diffuser {
   _id: string;
   name: string;
   creator: string;
@@ -13,43 +13,42 @@ export interface Candle {
   priceNumber: number;
   stock: number;
   description: string;
-  hasLids?: boolean;
-  hasLabelSelector?: boolean;
+  scents?: string[];
+  reedTypes?: string[];
   images: any[];
 }
 
 type LightboxState = {
-  product: Candle;
+  product: Diffuser;
   index: number;
 } | null;
 
-function ProductCard({ product, index, globalScents, globalLids, openLightbox }: { product: Candle; index: number; globalScents: string[]; globalLids: string[]; openLightbox: (state: LightboxState) => void }) {
+function DiffuserCard({ product, index, openLightbox }: { product: Diffuser; index: number; openLightbox: (state: LightboxState) => void }) {
   const [currentImage, setCurrentImage] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [selectedScent, setSelectedScent] = useState<string>('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const [selectedLid, setSelectedLid] = useState<string>('');
-  const [isLidDropdownOpen, setIsLidDropdownOpen] = useState(false);
-  const lidDropdownRef = useRef<HTMLDivElement>(null);
-
-  const [withLabel, setWithLabel] = useState(true);
+  const [selectedReedType, setSelectedReedType] = useState<string>('');
+  
+  const [isScentDropdownOpen, setIsScentDropdownOpen] = useState(false);
+  const [isReedDropdownOpen, setIsReedDropdownOpen] = useState(false);
+  
+  const scentDropdownRef = useRef<HTMLDivElement>(null);
+  const reedDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
+      if (scentDropdownRef.current && !scentDropdownRef.current.contains(event.target as Node)) {
+        setIsScentDropdownOpen(false);
       }
-      if (lidDropdownRef.current && !lidDropdownRef.current.contains(event.target as Node)) {
-        setIsLidDropdownOpen(false);
+      if (reedDropdownRef.current && !reedDropdownRef.current.contains(event.target as Node)) {
+        setIsReedDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  const images = product.images || [];
 
+  const images = product.images || [];
   const isMdStaggered = index % 2 === 1;
   const isLgStaggered = index % 3 === 1;
   const staggerClass = `${isMdStaggered ? 'md:mt-24' : 'md:mt-0'} ${isLgStaggered ? 'lg:mt-32' : 'lg:mt-0'}`;
@@ -73,7 +72,6 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
     if (!touchStart) return;
     const touchEnd = e.changedTouches[0].clientX;
     const diff = touchStart - touchEnd;
-
     if (diff > 40) nextImage();
     if (diff < -40) prevImage();
     setTouchStart(null);
@@ -86,12 +84,16 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
       toast.error('Esta pieza requiere precio de panel.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
       return;
     }
-    if (globalScents.length > 0 && !selectedScent) {
+
+    const diffuserScents = product.scents || [];
+    if (diffuserScents.length > 0 && !selectedScent) {
       toast.error('Por favor selecciona un aroma.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
       return;
     }
-    if (product.hasLids && globalLids.length > 0 && !selectedLid) {
-      toast.error('Por favor selecciona una tapa para el envase.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
+
+    const diffuserReeds = product.reedTypes || [];
+    if (diffuserReeds.length > 0 && !selectedReedType) {
+      toast.error('Por favor selecciona un tipo de varilla.', { style: { background: '#EBE9DD', color: '#1A1A1A', borderRadius: '2px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' } });
       return;
     }
 
@@ -100,9 +102,8 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
       name: product.name,
       price: product.priceNumber,
       stock: product.stock !== undefined ? product.stock : 10,
-      scent: selectedScent || undefined, // Adjuntamos la esencia a Zustand
-      lid: (product.hasLids && selectedLid) ? selectedLid : undefined, // Adjuntamos la tapa
-      hasLabel: product.hasLabelSelector ? withLabel : undefined,
+      scent: selectedScent || undefined,
+      reedType: selectedReedType || undefined,
       image: hasImages ? images[0] : null,
     });
   };
@@ -146,7 +147,7 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
             />
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-accent-1/5">
-              <Flame size={40} strokeWidth={1} className="text-text-dark/20 mb-3" />
+              <Droplets size={40} strokeWidth={1} className="text-text-dark/20 mb-3" />
               <span className="text-[10px] uppercase tracking-widest text-text-dark/30">Tina Velas</span>
             </div>
           )}
@@ -167,30 +168,30 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
 
       <div className="flex flex-col items-center text-center px-4 w-full">
         <h3 className="text-sm md:text-base font-sans tracking-widest uppercase mb-1">{product.name}</h3>
-        <p className="text-[9px] md:text-[10px] text-text-dark/50 font-sans tracking-[0.2em] uppercase mb-4">por {product.creator || 'Colección Lujo'}</p>
+        <p className="text-[9px] md:text-[10px] text-text-dark/50 font-sans tracking-[0.2em] uppercase mb-4">por {product.creator || 'Línea Aromaterapia'}</p>
         <div className="w-8 h-[1px] bg-accent-2/60 mb-4"></div>
-        <p className="text-[11px] font-sans text-text-dark/80 font-light leading-relaxed max-w-xs mb-6 h-12 overflow-hidden">{product.description}</p>
+        <p className="text-[11px] font-sans text-text-dark/80 font-light leading-relaxed max-w-xs mb-6">{product.description}</p>
 
-        {globalScents.length > 0 && (
-          <div className="w-full mb-5 relative" ref={dropdownRef}>
+        {(product.scents || []).length > 0 && (
+          <div className="w-full mb-3 relative" ref={scentDropdownRef}>
             <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={() => setIsScentDropdownOpen(!isScentDropdownOpen)}
               className="w-full flex items-center justify-between border-b border-text-dark/20 pb-2 text-[9px] md:text-[10px] font-sans tracking-[0.1em] transition-colors hover:border-text-dark group"
             >
               <span className="flex-1 text-center tracking-[0.2em] pl-4">{selectedScent ? selectedScent.toUpperCase() : 'SELECCIONAR AROMA'}</span>
-              <ChevronDown size={14} className={`text-text-dark/60 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown size={14} className={`text-text-dark/60 transition-transform duration-300 ${isScentDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
             <AnimatePresence>
-              {isDropdownOpen && (
+              {isScentDropdownOpen && (
                 <motion.div
                   initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}
                   className="absolute left-0 right-0 top-full mt-1 bg-bg-light border border-accent-2/30 shadow-xl z-20 py-1 rounded-sm overflow-hidden"
                 >
-                  {globalScents.map(scent => (
+                  {(product.scents || []).map(scent => (
                     <button
                       key={scent}
-                      onClick={() => { setSelectedScent(scent); setIsDropdownOpen(false); }}
+                      onClick={() => { setSelectedScent(scent); setIsScentDropdownOpen(false); }}
                       className={`w-full text-center py-2.5 px-2 text-[9px] md:text-[10px] font-sans tracking-[0.2em] uppercase transition-colors ${selectedScent === scent ? 'bg-accent-2/10 text-accent-2 font-medium' : 'text-text-dark/70 hover:bg-accent-1/20 hover:text-text-dark'}`}
                     >
                       {scent}
@@ -199,62 +200,39 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
                 </motion.div>
               )}
             </AnimatePresence>
-
-            <p className="text-[8px] text-text-dark/40 mt-2 uppercase tracking-widest text-center">Aroma Personalizado</p>
+            <p className="text-[8px] text-text-dark/40 mt-2 uppercase tracking-widest text-center">Aroma</p>
           </div>
         )}
 
-        {product.hasLids && globalLids.length > 0 && (
-          <div className="w-full mb-5 relative" ref={lidDropdownRef}>
+        {(product.reedTypes || []).length > 0 && (
+          <div className="w-full mb-5 relative" ref={reedDropdownRef}>
             <button
-              onClick={() => setIsLidDropdownOpen(!isLidDropdownOpen)}
+              onClick={() => setIsReedDropdownOpen(!isReedDropdownOpen)}
               className="w-full flex items-center justify-between border-b border-text-dark/20 pb-2 text-[9px] md:text-[10px] font-sans tracking-[0.1em] transition-colors hover:border-text-dark group"
             >
-              <span className="flex-1 text-center tracking-[0.2em] pl-4">{selectedLid ? selectedLid.toUpperCase() : 'SELECCIONAR TAPA'}</span>
-              <ChevronDown size={14} className={`text-text-dark/60 transition-transform duration-300 ${isLidDropdownOpen ? 'rotate-180' : ''}`} />
+              <span className="flex-1 text-center tracking-[0.2em] pl-4">{selectedReedType ? selectedReedType.toUpperCase() : 'TIPO DE VARILLA'}</span>
+              <ChevronDown size={14} className={`text-text-dark/60 transition-transform duration-300 ${isReedDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
             <AnimatePresence>
-              {isLidDropdownOpen && (
+              {isReedDropdownOpen && (
                 <motion.div
                   initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}
                   className="absolute left-0 right-0 top-full mt-1 bg-bg-light border border-accent-2/30 shadow-xl z-20 py-1 rounded-sm overflow-hidden"
                 >
-                  {globalLids.map(lidOption => (
+                  {(product.reedTypes || []).map(reed => (
                     <button
-                      key={lidOption}
-                      onClick={() => { setSelectedLid(lidOption); setIsLidDropdownOpen(false); }}
-                      className={`w-full text-center py-2.5 px-2 text-[9px] md:text-[10px] font-sans tracking-[0.2em] uppercase transition-colors ${selectedLid === lidOption ? 'bg-accent-2/10 text-accent-2 font-medium' : 'text-text-dark/70 hover:bg-accent-1/20 hover:text-text-dark'}`}
+                      key={reed}
+                      onClick={() => { setSelectedReedType(reed); setIsReedDropdownOpen(false); }}
+                      className={`w-full text-center py-2.5 px-2 text-[9px] md:text-[10px] font-sans tracking-[0.2em] uppercase transition-colors ${selectedReedType === reed ? 'bg-accent-2/10 text-accent-2 font-medium' : 'text-text-dark/70 hover:bg-accent-1/20 hover:text-text-dark'}`}
                     >
-                      {lidOption}
+                      {reed}
                     </button>
                   ))}
                 </motion.div>
               )}
             </AnimatePresence>
-
-            <p className="text-[8px] text-text-dark/40 mt-2 uppercase tracking-widest text-center">Tipo de Tapa</p>
-          </div>
-        )}
-
-        {product.hasLabelSelector && (
-          <div className="w-full mb-5 relative flex items-center justify-between border-b border-text-dark/20 pb-3">
-            <div className="flex flex-col text-left">
-              <span className="text-[9px] md:text-[10px] font-sans tracking-[0.2em] text-text-dark uppercase">Etiqueta Frontal</span>
-            </div>
-            <button
-              onClick={() => setWithLabel(!withLabel)}
-              className={`w-5 h-5 md:w-6 md:h-6 rounded-sm border transition-all duration-300 flex items-center justify-center shrink-0 ${withLabel ? 'bg-accent-2 border-accent-2 text-bg-light' : 'bg-transparent border-text-dark/40 hover:border-text-dark/60'}`}
-              aria-label={withLabel ? 'Desmarcar etiqueta' : 'Marcar etiqueta'}
-            >
-              <AnimatePresence>
-                {withLabel && (
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                    <Check size={14} strokeWidth={3} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </button>
+            <p className="text-[8px] text-text-dark/40 mt-2 uppercase tracking-widest text-center">Varillas</p>
           </div>
         )}
 
@@ -266,30 +244,16 @@ function ProductCard({ product, index, globalScents, globalLids, openLightbox }:
   );
 }
 
-export default function ProductList() {
-  const [candles, setCandles] = useState<Candle[]>([]);
-  const [globalScents, setGlobalScents] = useState<string[]>([]);
-  const [globalLids, setGlobalLids] = useState<string[]>([]);
+export default function Diffusers() {
+  const [diffusers, setDiffusers] = useState<Diffuser[]>([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<LightboxState>(null);
 
   useEffect(() => {
-    sanityClient.fetch(`*[_type == "scent"] | order(name asc) { name }`)
-      .then((data) => {
-        setGlobalScents(data.map((s: any) => s.name));
-      })
-      .catch(console.error);
-
-    sanityClient.fetch(`*[_type == "lid"] | order(name asc) { name }`)
-      .then((data) => {
-        setGlobalLids(data.map((l: any) => l.name));
-      })
-      .catch(console.error);
-
-    sanityClient.fetch(`*[_type == "candle"] | order(_createdAt asc) {
-        _id, name, creator, price, priceNumber, stock, description, hasLids, hasLabelSelector, images
+    sanityClient.fetch(`*[_type == "diffuser"] | order(_createdAt asc) {
+        _id, name, creator, price, priceNumber, stock, description, scents, reedTypes, images
       }`).then((data) => {
-      setCandles(data);
+      setDiffusers(data);
       setLoading(false);
     }).catch((err) => {
       console.error(err);
@@ -315,20 +279,22 @@ export default function ProductList() {
     setLightbox({ ...lightbox, index: (lightbox.index - 1 + lightbox.product.images.length) % lightbox.product.images.length });
   };
 
+  if (!loading && diffusers.length === 0) return null;
+
   return (
     <>
-      <section id="shop" className="py-24 md:py-32 bg-bg-light min-h-[50vh]">
+      <section id="difusores" className="py-24 md:py-32 bg-bg-light min-h-[50vh]">
         <div className="max-w-7xl mx-auto px-6">
 
-          <div className="mb-20 md:mb-24 flex flex-col md:flex-row md:items-end justify-between border-b border-accent-2/30 pb-12">
+          <div className="mb-20 md:mb-24 flex flex-col md:flex-row md:items-end justify-between border-b border-text-dark/20 pb-12">
             <div className="max-w-xl">
-              <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} className="text-5xl md:text-6xl lg:text-7xl font-heading tracking-tight mb-4">
-                Velas <br /> <span className="italic font-light text-text-dark/70">Artesanales</span>
+              <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} className="text-5xl md:text-6xl lg:text-7xl font-heading tracking-tight mb-4 text-text-dark">
+                Difusores <br /> <span className="italic font-light text-text-dark/70">Aromáticos</span>
               </motion.h2>
             </div>
             <div className="mt-12 md:mt-0 relative">
               <span className="text-[10px] md:text-xs font-sans tracking-[0.3em] font-medium uppercase md:origin-bottom-right lg:absolute lg:right-0 lg:bottom-2 whitespace-nowrap text-text-dark inline-block md:transform md:-rotate-90">
-                Colecciones
+                Línea Aromaterapia
               </span>
             </div>
           </div>
@@ -336,18 +302,12 @@ export default function ProductList() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-32 space-y-4">
               <Loader2 className="animate-spin text-accent-2" size={32} />
-              <p className="text-[10px] font-sans tracking-[0.3em] text-text-dark uppercase">Encendiendo catálogo online...</p>
+              <p className="text-[10px] font-sans tracking-[0.3em] text-text-dark uppercase">Encendiendo catálogo de difusores...</p>
             </div>
-          ) : candles.length === 0 ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-32 space-y-4 text-center">
-              <p className="text-[12px] font-sans tracking-[0.2em] text-text-dark/60 uppercase">Catálogo en preparación</p>
-              <h3 className="text-3xl font-heading text-text-dark">Sube tus primera velas en tu panel de control</h3>
-              <p className="font-sans text-xs max-w-sm mt-4 text-text-dark/60">En cuanto publiques un producto en Sanity, aparecerá mágicamente aquí.</p>
-            </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-8">
-              {candles.map((candle, index) => (
-                <ProductCard key={candle._id} product={candle} index={index} globalScents={globalScents} globalLids={globalLids} openLightbox={setLightbox} />
+              {diffusers.map((diffuser, index) => (
+                <DiffuserCard key={diffuser._id} product={diffuser} index={index} openLightbox={setLightbox} />
               ))}
             </div>
           )}
@@ -367,8 +327,8 @@ export default function ProductList() {
                 <motion.img key={lightbox.index} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }} src={urlFor(lightbox.product.images[lightbox.index]).url()} alt={`${lightbox.product.name} - Vista completa ${lightbox.index + 1}`} className="w-auto h-auto max-w-full max-h-full object-contain cursor-default shadow-2xl rounded-sm" onClick={(e) => e.stopPropagation()} />
               ) : (
                 <motion.div key={lightbox.index} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-80 h-[400px] flex flex-col items-center justify-center bg-bg-light rounded-sm shadow-2xl" onClick={(e) => e.stopPropagation()}>
-                  <Flame size={64} strokeWidth={1} className="text-text-dark/20 mb-4" />
-                  <span className="text-xs font-sans tracking-[0.3em] uppercase text-text-dark/40">Tina Velas</span>
+                  <Droplets size={64} strokeWidth={1} className="text-text-dark/20 mb-4" />
+                  <span className="text-xs font-sans tracking-[0.3em] uppercase text-text-dark/40">Línea Aromaterapia</span>
                 </motion.div>
               )}
             </AnimatePresence>

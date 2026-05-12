@@ -11,6 +11,7 @@ export interface CartItem {
   scent?: string;
   lid?: string;
   hasLabel?: boolean;
+  reedType?: string;
   image?: any;
 }
 
@@ -37,7 +38,8 @@ export const useCartStore = create<CartState>()(
         const scentStr = newItem.scent ? `-${newItem.scent}` : '';
         const lidStr = newItem.lid ? `-${newItem.lid}` : '';
         const labelStr = newItem.hasLabel !== undefined ? (newItem.hasLabel ? '-L' : '-NL') : '';
-        const cartItemId = `${newItem.id}${scentStr}${lidStr}${labelStr}`;
+        const reedTypeStr = newItem.reedType ? `-${newItem.reedType}` : '';
+        const cartItemId = `${newItem.id}${scentStr}${lidStr}${labelStr}${reedTypeStr}`;
         const completeItem = { ...newItem, cartItemId };
 
         const existingItem = items.find((i) => i.cartItemId === cartItemId);

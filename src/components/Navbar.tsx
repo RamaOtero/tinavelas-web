@@ -37,7 +37,6 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Left Links (Desktop) */}
         <div className="hidden md:flex flex-1 items-center space-x-3 md:space-x-4 lg:space-x-6 text-[8.5px] md:text-[9px] lg:text-[10px] tracking-[0.1em] md:tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium whitespace-nowrap overflow-hidden">
           <a href="#shop" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Velas
@@ -55,10 +54,6 @@ export default function Navbar() {
             Accesorios
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
           </a>
-          <a href="#sprays" className="hover:opacity-70 transition-opacity relative group whitespace-nowrap">
-            Home Spray
-            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
-          </a>
         </div>
 
         {/* Logo (Center) */}
@@ -68,6 +63,14 @@ export default function Navbar() {
 
         {/* Right Icons */}
         <div className="flex-1 flex justify-end items-center space-x-3 md:space-x-4 lg:space-x-6 text-[8.5px] md:text-[9px] lg:text-[10px] tracking-[0.1em] md:tracking-[0.15em] lg:tracking-[0.2em] uppercase font-medium whitespace-nowrap overflow-hidden">
+          <a href="#sprays" className="hidden md:inline hover:opacity-70 transition-opacity relative group whitespace-nowrap">
+            Home Spray
+            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
+          </a>
+          <a href="#difusores" className="hidden md:inline hover:opacity-70 transition-opacity relative group whitespace-nowrap">
+            Difusores
+            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
+          </a>
           <a href="#nosotros" className="hidden md:inline hover:opacity-70 transition-opacity relative group whitespace-nowrap">
             Nosotros
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all group-hover:w-full"></span>
@@ -106,6 +109,7 @@ export default function Navbar() {
             <a href="#refill" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Refill</a>
             <a href="#accesorios" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Accesorios</a>
             <a href="#sprays" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Home Spray</a>
+            <a href="#difusores" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Difusores</a>
             <a href="#nosotros" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Nosotros</a>
             <a href="#cuidados" onClick={() => setIsOpen(false)} className="hover:text-accent-1 transition-colors">Cuidados</a>
 
