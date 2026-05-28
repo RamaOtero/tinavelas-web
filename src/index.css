@@ -57,3 +57,9 @@ h1,h2,h3,h4,h5,h6 {
   animation: ambient-glow 7s ease-in-out infinite;
 }
 
+/* Fix: prevent any browser default backgrounds, borders, or outlines on canvas elements */
+canvas {
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+}

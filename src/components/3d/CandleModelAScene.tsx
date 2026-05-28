@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Environment, ContactShadows, Float } from '@react-three/drei'
-import { Suspense, useState, useRef, useMemo } from 'react'
+import { Suspense, useState, useRef, useMemo, useEffect } from 'react'
 import * as THREE from 'three'
 import CandleGLBModel from './CandleGLBModel'
 
@@ -150,6 +150,16 @@ const StylizedFlame = ({ lit, position }: FlameProps) => {
   )
 }
 
+// ─── Componente de notificación de carga completa ─────────────────────────────
+const LoaderNotifier = ({ onLoad }: { onLoad: () => void }) => {
+  useEffect(() => {
+    // Un pequeño retraso de 50ms para asegurar que el canvas termine de renderizar el primer frame
+    const timer = setTimeout(onLoad, 50)
+    return () => clearTimeout(timer)
+  }, [onLoad])
+  return null
+}
+
 interface CandleModelASceneProps {
   lit?: boolean;
   setLit?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -169,6 +179,7 @@ const CandleModelAScene = ({ lit: propLit, setLit: propSetLit }: CandleModelASce
   const [localLit, setLocalLit] = useState(true)
   const lit = propLit !== undefined ? propLit : localLit
   const setLit = propSetLit !== undefined ? propSetLit : setLocalLit
+  const [loaded, setLoaded] = useState(false)
 
   return (
     <Canvas
@@ -179,7 +190,11 @@ const CandleModelAScene = ({ lit: propLit, setLit: propSetLit }: CandleModelASce
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 1.3,
       }}
-      style={{ background: 'transparent' }}
+      style={{
+        background: 'transparent',
+        opacity: loaded ? 1 : 0,
+        transition: 'opacity 0.6s ease-in-out'
+      }}
     >
       <Suspense fallback={null}>
         {/* Environment base (sunset) */}
@@ -244,6 +259,9 @@ const CandleModelAScene = ({ lit: propLit, setLit: propSetLit }: CandleModelASce
           far={4}
           color="#2a0d00"
         />
+
+        {/* Notificador para activar la opacidad del canvas solo cuando todo se ha cargado */}
+        <LoaderNotifier onLoad={() => setLoaded(true)} />
       </Suspense>
     </Canvas>
   )
