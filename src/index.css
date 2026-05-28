@@ -41,3 +41,19 @@ h1,h2,h3,h4,h5,h6 {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-dark); 
 }
+
+/* Luxury Ambient Breathe Glow for Candle Atmosphere */
+@keyframes ambient-glow {
+  0%, 100% {
+    opacity: 0.88;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+.animate-ambient-glow {
+  animation: ambient-glow 7s ease-in-out infinite;
+}
+
