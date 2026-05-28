@@ -1,14 +1,22 @@
 import { useRef, useEffect } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
+import * as THREE from 'three'
+
+interface CandleGLBModelProps {
+  file: string;
+  scale?: number | [number, number, number];
+  position?: [number, number, number];
+  autoRotate?: boolean;
+}
 
 const CandleGLBModel = ({
   file,
   scale = 1,
   position = [0, 0, 0],
   autoRotate = false,
-}) => {
-  const groupRef = useRef()
+}: CandleGLBModelProps) => {
+  const groupRef = useRef<THREE.Group>(null)
 
   // 💡 NOTA: Ajusta esta ruta según dónde guardaste tu .glb en el Paso 2
   const { scene } = useGLTF(`/assets/${file}`)
@@ -16,12 +24,13 @@ const CandleGLBModel = ({
   // Generar las normales al cargar el modelo si no las tiene (Fix crítico que descubrimos)
   useEffect(() => {
     scene.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = true
-        child.receiveShadow = true
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh
+        mesh.castShadow = true
+        mesh.receiveShadow = true
 
-        if (child.geometry && !child.geometry.attributes.normal) {
-          child.geometry.computeVertexNormals()
+        if (mesh.geometry && !mesh.geometry.attributes.normal) {
+          mesh.geometry.computeVertexNormals()
         }
       }
     })

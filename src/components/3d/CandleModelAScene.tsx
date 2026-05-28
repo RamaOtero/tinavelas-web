@@ -1,13 +1,18 @@
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Environment, ContactShadows, Float } from '@react-three/drei'
+import { Environment, ContactShadows, Float } from '@react-three/drei'
 import { Suspense, useState, useRef, useMemo } from 'react'
 import * as THREE from 'three'
 import CandleGLBModel from './CandleGLBModel'
 
+interface FlameProps {
+  lit: boolean;
+  position: [number, number, number];
+}
+
 // ─── Componente Llama Estilizada "Vector-Clay" (Multicapa y Orgánica) ─────────
-const StylizedFlame = ({ lit, position }) => {
-  const flameGroupRef = useRef()
-  const lightRef = useRef()
+const StylizedFlame = ({ lit, position }: FlameProps) => {
+  const flameGroupRef = useRef<THREE.Group>(null)
+  const lightRef = useRef<THREE.PointLight>(null)
   const currentScale = useRef(lit ? 1.0 : 0.0)
 
   // Definimos las siluetas vectoriales de la llama inspiradas en la ilustración
@@ -145,12 +150,17 @@ const StylizedFlame = ({ lit, position }) => {
   )
 }
 
+interface CandleModelASceneProps {
+  lit?: boolean;
+  setLit?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 // ─── Componente Escena Principal ─────────────────────────────────────────────
-const CandleModelAScene = ({ lit: propLit, setLit: propSetLit }) => {
+const CandleModelAScene = ({ lit: propLit, setLit: propSetLit }: CandleModelASceneProps) => {
   const GLB_FILE = 'candle-a.glb'
 
   // Coordenadas matemáticas exactas detectadas de las 3 mechas (ajustadas al offset y = -0.5)
-  const FLAMES = useMemo(() => [
+  const FLAMES = useMemo<Array<{ id: string; pos: [number, number, number] }>>(() => [
     { id: 'left', pos: [-0.10005, -0.31, 0.175] }, // Llama izquierda (Mediana)
     { id: 'center', pos: [-0.0045, -0.31, 0.3] }, // Llama central (Alta)
     { id: 'right', pos: [0.135, -0.34, 0.19] }   // Llama derecha (Baja)
@@ -168,7 +178,6 @@ const CandleModelAScene = ({ lit: propLit, setLit: propSetLit }) => {
         antialias: true,
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 1.3,
-        outputColorSpace: THREE.SRGBColorSpace,
       }}
       style={{ background: 'transparent' }}
     >
@@ -226,8 +235,6 @@ const CandleModelAScene = ({ lit: propLit, setLit: propSetLit }) => {
 
         </Float>
 
-
-
         {/* Sombra de contacto en el piso */}
         <ContactShadows
           position={[0, -1.42, 0]}
@@ -243,4 +250,3 @@ const CandleModelAScene = ({ lit: propLit, setLit: propSetLit }) => {
 }
 
 export default CandleModelAScene
-
